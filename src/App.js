@@ -23,16 +23,18 @@ const CATEGORIES = [
 // SVG COMPONENTS
 // =========================================
 
-// COMPONENTE SVG: CORAZÓN AZUL LATIENDO (Sin Osos)
-const AnimatedBlueHeart = () => (
+// =========================================
+// COMPONENTE SVG: CORAZÓN AZUL LATIDO (Versión Escalable)
+// =========================================
+const AnimatedBlueHeart = ({ sizeMultiplier = 1 }) => (
     <svg 
         className="ph heart-beat-anim" 
         viewBox="0 0 256 256" 
         style={{
-            color: '#29B6F6', /* Azul Ártico definido en tu CSS */
-            width: '1.8rem', 
-            height: '1.8rem',
-            filter: 'drop-shadow(0 4px 6px rgba(41, 182, 246, 0.4))'
+            color: '#29B6F6',
+            width: `${1.8 * sizeMultiplier}rem`, 
+            height: `${1.8 * sizeMultiplier}rem`,
+            filter: `drop-shadow(0 10px ${20 * sizeMultiplier}px rgba(41, 182, 246, 0.4))` 
         }}
     >
         <path fill="currentColor" d="M128 216.8c-6.4-4.8-12.8-10-19.2-15.2-32-25.6-64-49.6-76.8-62.4-14.4-14.4-22.4-33.6-22.4-54.4 0-36 27.2-64 64-64 16 0 32 6.4 44.8 17.6 11.2-11.2 27.2-17.6 44.8-17.6 36 0 64 28 64 64 0 20.8-8 40-22.4 54.4-12.8 12.8-44.8 36.8-76.8 62.4-6.4 5.6-12.8 10.4-19.2 15.2z" />
@@ -233,12 +235,12 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm }) => {
     return (
         <div className={`modal-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}>
             <div className="modal-content elastic-in" onClick={e => e.stopPropagation()}>
-                <div style={{fontSize: '3rem', marginBottom: 10}}>\ud83d\ude3a</div>
-                <h3 style={{marginBottom: 10}}>¿Segurito, osito?</h3>
-                <p style={{color: 'var(--text-sec)', marginBottom: 20}}>¿Quieres borrar esta tarea para siempre?</p>
+                <h2 style={{fontSize: '2.5rem', marginBottom: 10, color: 'var(--icon-color)'}}>Tesoro</h2>
+                <h3 style={{marginBottom: 10}}>¿Seguro de borrar?</h3>
+                <p style={{color: 'var(--text-sec)', marginBottom: 20}}>¿Quieres eliminar esta tarea?</p>
                 <div style={{display:'flex', gap: 10}}>
                     <button onClick={onClose} className="btn-secondary" style={{flex: 1}}>No, dejémosla</button>
-                    <button onClick={onConfirm} className="btn-primary" style={{background: '#FF9AA2', flex: 1}}>Sí, borrar</button>
+                    <button onClick={onConfirm} className="btn-primary" style={{background: '#FF9AA2', flex: 1, border: 'none'}}>Sí, borrar</button>
                 </div>
             </div>
         </div>
@@ -319,10 +321,10 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
     const addOrEditTask = (taskData, id) => {
         if (id) {
             setTasks(tasks.map(t => t.id === id ? { ...t, ...taskData } : t));
-            showToast("¡Tarea editada! ✏️");
+            showToast("¡Tarea editada! \u270f\ufe0f");
         } else {
             setTasks([{ id: Date.now(), completed: false, ...taskData }, ...tasks]);
-            showToast("¡Nueva misión creada! ⭐");
+            showToast("¡Nueva misión creada! \u2b50");
         }
         setEditingTask(null);
     };
@@ -331,7 +333,7 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
         setTasks(tasks.map(t => {
             if (t.id === id && !t.completed) {
                 triggerConfetti();
-                showToast("¡Bien hecho! 🎉");
+                showToast("¡Bien hecho! \ud83c\udf89");
             }
             return t.id === id ? { ...t, completed: !t.completed } : t;
         }));
@@ -340,13 +342,26 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
     const confirmDelete = () => {
         setTasks(tasks.filter(t => t.id !== deleteId));
         setDeleteId(null);
-        showToast("Tarea eliminada 🗑️");
+        showToast("Tarea eliminada \ud83d\uddd1\ufe0f");
     };
 
     const giveHug = () => {
         setHugs(hugs + 1);
-        showToast(`¡Abrazo #${hugs + 1}! ❤️`);
+        showToast(`¡Abrazo #${hugs + 1}! \u2764\ufe0f`);
         for(let i=0; i<5; i++) createParticle('heart');
+    };
+
+    // Helper para obtener color de categoría
+    const getCategoryColor = (catId) => {
+        const map = {
+            'salud': 'var(--cat-salud)',
+            'trabajo': 'var(--cat-trabajo)',
+            'familia': 'var(--cat-familia)',
+            'universidad': 'var(--cat-uni)',
+            'novia': 'var(--cat-novia)',
+            'all': 'var(--icon-color)'
+        };
+        return map[catId] || 'var(--text-sec)';
     };
 
     // Filter & Sort
@@ -414,73 +429,88 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
 
                 <div className="filter-bar">
                     {CATEGORIES.map(c => (
-                        <button key={c.id} className={`filter-chip ${filterCat === c.id ? 'active' : ''}`} onClick={() => setFilterCat(c.id)}>
+                        <button 
+                            key={c.id} 
+                            className={`filter-chip ${filterCat === c.id ? 'active' : ''}`} 
+                            onClick={() => setFilterCat(c.id)}
+                            style={{
+                                // Si está activo, usa el color de la categoría, si es 'all' usa el principal
+                                backgroundColor: filterCat === c.id ? (c.id === 'all' ? 'var(--icon-color)' : getCategoryColor(c.id)) : 'var(--bg-card)',
+                                color: filterCat === c.id ? 'white' : 'var(--text-sec)',
+                                borderColor: filterCat === c.id ? (c.id === 'all' ? 'var(--icon-color)' : getCategoryColor(c.id)) : 'transparent'
+                            }}
+                        >
                             {c.label}
                         </button>
                     ))}
                 </div>
             </div>
 
-            {/* Task List */}
-            <div className="task-list-container">
-                {filteredTasks.length === 0 ? (
-                    <div style={{textAlign: 'center', marginTop: 100, color: 'var(--text-sec)'}}>
-                        <div className="bear-float" style={{fontSize: '5rem', marginBottom: 20}}>🐻‍❄️</div>
-                        <p style={{fontWeight: 700, fontSize: '1.1rem'}}>No hay tareas aquí.</p>
-                        <p style={{fontSize: '0.9rem', marginBottom: 20}}>¡Todo en orden!</p>
-                        <button className="btn-secondary" onClick={() => { setEditingTask(null); setModalOpen(true); }}>Añadir tarea</button>
-                    </div>
-                ) : (
-                    filteredTasks.map(task => {
-                        const prioInfo = PRIORITIES.find(p => p.id === task.priority) || PRIORITIES[1];
-                        const catInfo = CATEGORIES.find(c => c.id === task.category) || { label: 'General' };
-                        return (
-                            <div key={task.id} id={`task-${task.id}`} className={`task-card priority-${task.priority} ${task.completed ? 'completed' : ''}`}>
-                                <div 
-                                    className={`checkbox-custom ${task.completed ? 'checked' : ''}`}
-                                    onClick={() => toggleComplete(task.id)}
-                                >
-                                    {task.completed && <i className="ph ph-check-fat-fill"></i>}
-                                </div>
-                                <div className="task-content">
-                                    <h3>{task.text}</h3>
-                                    <div className="task-meta">
-                                        <span style={{fontWeight: 800, background: prioInfo.color, color: 'white', padding: '2px 6px', borderRadius: 4, opacity: 0.9}}>{prioInfo.label}</span>
-                                        <span>·</span>
-                                        <span>{catInfo.label}</span>
+                {/* Task List */}
+                <div className="task-list-container">
+                    {filteredTasks.length === 0 ? (
+                        <div style={{textAlign: 'center', marginTop: 100, color: 'var(--text-sec)'}}>
+                            {/* CAMBIO: OSO POLAR DEL DASHBOARD POR CORAZÓN AZUL LATIENDO */}
+                            <div style={{marginBottom: 20}}>
+                                <AnimatedBlueHeart sizeMultiplier={4} />
+                            </div>
+                            <p style={{fontWeight: 700, fontSize: '1.1rem'}}>No hay tareas aquí.</p>
+                            <p style={{fontSize: '0.9rem', marginBottom: 20}}>¡Todo en orden!</p>
+                            <button className="btn-secondary" onClick={() => { setEditingTask(null); setModalOpen(true); }}>Añadir tarea</button>
+                        </div>
+                    ) : (
+                        filteredTasks.map(task => {
+                            const prioInfo = PRIORITIES.find(p => p.id === task.priority) || PRIORITIES[1];
+                            const catInfo = CATEGORIES.find(c => c.id === task.category) || { label: 'General', id: 'all' };
+                            const catColor = getCategoryColor(task.category);
+
+                            return (
+                                <div key={task.id} id={`task-${task.id}`} className={`task-card priority-${task.priority} ${task.completed ? 'completed' : ''}`}>
+                                    <div 
+                                        className={`checkbox-custom ${task.completed ? 'checked' : ''}`}
+                                        onClick={() => toggleComplete(task.id)}
+                                    >
+                                        {task.completed && <i className="ph ph-check-fat-fill"></i>}
+                                    </div>
+                                    <div className="task-content">
+                                        <h3>{task.text}</h3>
+                                        <div className="task-meta">
+                                            <span style={{fontWeight: 800, background: catColor, color: 'white', padding: '2px 6px', borderRadius: 4, opacity: 0.9}}>{prioInfo.label}</span>
+                                            <span>·</span>
+                                            <span style={{color: catColor, fontWeight: 800}}>{catInfo.label}</span>
+                                        </div>
+                                    </div>
+                                    <div className="action-btns">
+                                        <button className="mini-btn edit" onClick={() => { setEditingTask(task); setModalOpen(true); }}><i className="ph ph-pencil-simple"></i></button>
+                                        <button className="mini-btn del" onClick={() => setDeleteId(task.id)}><i className="ph ph-trash"></i></button>
                                     </div>
                                 </div>
-                                <div className="action-btns">
-                                    <button className="mini-btn edit" onClick={() => { setEditingTask(task); setModalOpen(true); }}><i className="ph ph-pencil-simple"></i></button>
-                                    <button className="mini-btn del" onClick={() => setDeleteId(task.id)}><i className="ph ph-trash"></i></button>
-                                </div>
-                            </div>
-                        );
-                    })
-                )}
+                            );
+                        })
+                    )}
+                </div>
+
+                {/* FAB */}
+                <button className="fab" onClick={() => { setEditingTask(null); setModalOpen(true); }}>
+                    <i className="ph ph-plus"></i>
+                </button>
+
+                {/* Modals & Panels */}
+                <TaskModal isOpen={modalOpen} onClose={() => setModalOpen(false)} onSave={addOrEditTask} editingTask={editingTask} />
+                <DeleteConfirmModal isOpen={!!deleteId} onClose={() => setDeleteId(null)} onConfirm={confirmDelete} />
+                
+                <SettingsPanel 
+                    isOpen={settingsOpen} 
+                    onClose={() => setSettingsOpen(false)} 
+                    user={user} 
+                    onUpdateUser={onUpdateUser} 
+                    onLogout={onLogout} 
+                    theme={theme} 
+                    toggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')} 
+                />
             </div>
-
-            {/* FAB */}
-            <button className="fab" onClick={() => { setEditingTask(null); setModalOpen(true); }}>
-                <i className="ph ph-plus"></i>
-            </button>
-
-            {/* Modals & Panels */}
-            <TaskModal isOpen={modalOpen} onClose={() => setModalOpen(false)} onSave={addOrEditTask} editingTask={editingTask} />
-            <DeleteConfirmModal isOpen={!!deleteId} onClose={() => setDeleteId(null)} onConfirm={confirmDelete} />
-            
-            <SettingsPanel 
-                isOpen={settingsOpen} 
-                onClose={() => setSettingsOpen(false)} 
-                user={user} 
-                onUpdateUser={onUpdateUser} 
-                onLogout={onLogout} 
-                theme={theme} 
-                toggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')} 
-            />
-        </div>
-    );
-};
+        );
+    };
 
 // =========================================
 // APP ROOT
