@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Osito Polar Notes</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%230288D1' d='M16 28.4c-1.4-1.1-2.8-2.2-4.2-3.3C5.6 20.1 1 16.2 1 11 1 6 5 2 10 2c2.4 0 4.6 1.1 6 2.8C17.4 3.1 19.6 2 22 2c5 0 9 4 9 9 0 5.2-4.6 9.1-10.8 14.1C18.8 26.2 17.4 27.3 16 28.4z'/%3E%3C/svg%3E">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-main: 'Nunito', sans-serif;
+            --radius-pill: 60px;
+            --radius-card: 28px;
+            --radius-btn: 20px;
+            --bg-app: #E3F2FD;
+            --bg-card: #FFFFFF;
+            --text-main: #0D47A1;
+            --text-sec: #546E7A;
+            --primary-grad: linear-gradient(135deg, #4FC3F7 0%, #0288D1 100%);
+            --icon-color: #0288D1;
+            --icon-light: #4FC3F7;
+            --btn-shadow: 0 8px 24px rgba(2, 136, 209, 0.3);
+            --card-shadow: 0 8px 30px rgba(2, 136, 209, 0.08);
+            --prio-high: #FF5252;
+            --prio-med: #FFAB40;
+            --prio-low: #69F0AE;
+            --cat-salud: #00BFA5;
+            --cat-trabajo: #5C6BC0;
+            --cat-familia: #FFA726;
+            --cat-uni: #7E57C2;
+            --cat-novia: #EC407A;
+            --love-grad: linear-gradient(135deg, #EC407A 0%, #F48FB1 50%, #4FC3F7 100%);
+        }
+        [data-theme="dark"] {
+            --bg-app: #0B1422;
+            --bg-card: #152238;
+            --text-main: #E1F5FE;
+            --text-sec: #78909C;
+            --icon-color: #4FC3F7;
+            --icon-light: #81D4FA;
+            --primary-grad: linear-gradient(135deg, #0277BD 0%, #01579B 100%);
+            --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+            --btn-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: var(--font-main) !important; }
+        body { background: var(--bg-app); color: var(--text-main); min-height: 100vh; overflow-x: hidden; transition: background 0.4s, color 0.4s; }
+        #root { width: 100%; max-width: 500px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; position: relative; background: var(--bg-app); }
+        @keyframes elasticIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .elastic-in { animation: elasticIn 0.55s cubic-bezier(0.68, -0.4, 0.265, 1.4) forwards; }
+        @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .slide-up { animation: slideUp 0.45s cubic-bezier(0.22, 0.8, 0.36, 1) forwards; }
+        @keyframes bearFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .bear-float { animation: bearFloat 3s ease-in-out infinite; }
+        @keyframes heartbeat { 0%{transform:scale(1)}15%{transform:scale(1.25)}30%{transform:scale(1)}45%{transform:scale(1.25)}75%{transform:scale(1)} }
+        .heart-beat { animation: heartbeat 1.8s ease-in-out infinite; display: inline-block; }
+        @keyframes fadeSlideOut { to { opacity: 0; transform: translateX(80px); max-height: 0; margin-bottom: 0; padding: 0; overflow: hidden; } }
+        .task-removing { animation: fadeSlideOut 0.4s forwards; pointer-events: none; }
+        @keyframes taskIn { from { transform: translateX(-30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .task-enter { animation: taskIn 0.35s ease-out forwards; }
+        @keyframes pulseGlow { 0%,100%{ box-shadow: 0 0 0 0 rgba(2,136,209,0.3); } 50%{ box-shadow: 0 0 0 12px rgba(2,136,209,0); } }
+        .pulse-glow { animation: pulseGlow 2s infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes motivIn { 0% { transform: translateY(10px) scale(0.95); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+        @keyframes motivOut { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-10px) scale(0.95); opacity: 0; } }
+        @keyframes streakPulse { 0%,100%{transform:scale(1)}50%{transform:scale(1.08)} }
+        @keyframes progressFill { from { height: 0; } }
+        @keyframes pulseUrgent { 0%,100%{opacity:1}50%{opacity:0.6} }
+        @keyframes shakeX { 0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)} }
+        .shake-x { animation: shakeX 0.4s ease-out; }
+        .toast-wrap { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); z-index: 9000; pointer-events: none; }
+        .toast-msg { background: var(--text-main); color: var(--bg-card); padding: 14px 28px; border-radius: var(--radius-pill); font-weight: 800; font-size: 0.92rem; box-shadow: 0 10px 40px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px; white-space: nowrap; opacity: 0; transform: translateY(-20px); transition: all 0.35s; }
+        .toast-msg.visible { opacity: 1; transform: translateY(0); }
+        .btn-primary { background: var(--primary-grad); color: #fff; width: 100%; padding: 18px; border-radius: var(--radius-pill); font-weight: 800; font-size: 1.05rem; border: none; box-shadow: var(--btn-shadow); display: flex; justify-content: center; align-items: center; gap: 10px; cursor: pointer; transition: transform 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-primary:active { transform: scale(0.96); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-secondary { background: var(--bg-card); color: var(--text-main); padding: 14px 24px; border-radius: var(--radius-pill); font-weight: 700; font-size: 1rem; border: none; box-shadow: var(--card-shadow); cursor: pointer; transition: 0.2s; }
+        .btn-secondary:active { transform: scale(0.97); }
+        .btn-icon { background: var(--bg-card); color: var(--icon-color); width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: var(--card-shadow); border: none; cursor: pointer; transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+        .btn-icon:active { transform: scale(0.88); }
+        .input-base { width: 100%; padding: 16px 20px; background: var(--bg-card); border: 2px solid transparent; border-radius: var(--radius-btn); color: var(--text-main); font-size: 1rem; font-weight: 700; outline: none; box-shadow: var(--card-shadow); transition: 0.2s; }
+        .input-base:focus { border-color: var(--icon-color); }
+        .confetti-piece { position: fixed; top: -20px; pointer-events: none; z-index: 99999; will-change: transform; }
+        @keyframes confettiDrop { 0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(105vh) rotate(var(--spin)) scale(0.4); opacity: 0; } }
+        .auth-container { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 40px 24px; }
+        .auth-card { background: var(--bg-card); padding: 32px; border-radius: 36px; box-shadow: var(--card-shadow); }
+        .auth-toggle { display: flex; background: var(--bg-app); padding: 5px; border-radius: var(--radius-pill); margin-bottom: 20px; position: relative; height: 50px; }
+        .auth-toggle-btn { flex: 1; background: transparent; color: var(--text-sec); font-weight: 700; font-size: 0.95rem; z-index: 2; cursor: pointer; border-radius: var(--radius-pill); display: flex; align-items: center; justify-content: center; user-select: none; }
+        .auth-toggle-btn.active { color: #fff; }
+        .auth-slider { position: absolute; top: 5px; left: 5px; width: calc(50% - 5px); height: calc(100% - 10px); background: var(--icon-color); border-radius: var(--radius-pill); transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1; }
+        .auth-slider.right { transform: translateX(100%); }
+        .app-layout { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .top-bar { padding: 20px 20px 0; z-index: 10; flex-shrink: 0; }
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 12px; }
+        .header-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+        .user-greeting h1 { font-size: 1.55rem; font-weight: 900; line-height: 1.2; background: var(--love-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .user-greeting p { font-size: 0.92rem; color: var(--text-sec); font-weight: 700; margin-bottom: 1px; }
+        .giraffe-svg { filter: drop-shadow(0 4px 10px rgba(255,183,77,0.2)); flex-shrink: 0; }
+        .motiv-banner { background: var(--love-grad); padding: 12px 18px; border-radius: 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; min-height: 48px; position: relative; overflow: hidden; cursor: pointer; }
+        .motiv-banner::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent); background-size: 200% 100%; animation: shimmer 3s infinite; }
+        .motiv-text { color: #fff; font-weight: 800; font-size: 0.88rem; position: relative; z-index: 2; flex: 1; line-height: 1.3; }
+        .motiv-text.anim-in { animation: motivIn 0.4s ease-out forwards; }
+        .motiv-text.anim-out { animation: motivOut 0.3s ease-in forwards; }
+        .streak-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 14px; padding: 8px 16px; background: rgba(236,64,122,0.08); border-radius: 30px; }
+        .streak-fire { font-size: 1.4rem; animation: streakPulse 1.5s ease-in-out infinite; }
+        .streak-label { font-size: 0.82rem; font-weight: 800; color: var(--cat-novia); }
+        .streak-num { font-size: 1rem; font-weight: 900; color: var(--cat-novia); }
+        .func-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+        .func-card { background: var(--bg-card); padding: 16px 8px; border-radius: var(--radius-card); box-shadow: var(--card-shadow); text-align: center; cursor: pointer; transition: transform 0.2s; position: relative; overflow: hidden; }
+        .func-card:active { transform: scale(0.94); }
+        .func-icon { font-size: 1.6rem; color: var(--icon-color); margin-bottom: 4px; }
+        .func-val { font-size: 1.2rem; font-weight: 900; color: var(--text-main); }
+        .func-label { font-size: 0.72rem; font-weight: 700; color: var(--text-sec); }
+        .func-badge { position: absolute; top: 6px; right: 6px; background: var(--prio-high); color: #fff; font-size: 0.6rem; font-weight: 900; padding: 2px 7px; border-radius: 20px; min-width: 18px; text-align: center; animation: pulseUrgent 1.5s ease-in-out infinite; }
+        .sticky-wrap { position: relative; margin-bottom: 14px; }
+        .sticky-note { background: linear-gradient(145deg, #FFFDE7, #FFF9C4); color: #5D4037; padding: 18px 18px 14px; border-radius: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.04), 0 12px 24px rgba(0,0,0,0.08); }
+        .sticky-note textarea { width: 100%; background: transparent; border: none; outline: none; color: #5D4037; font-weight: 600; resize: none; font-size: 0.88rem; font-style: italic; line-height: 1.4; }
+        .note-pin { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 14px; height: 14px; background: radial-gradient(circle at 35% 35%, #FF8A80, #C62828); border-radius: 50%; box-shadow: 0 3px 6px rgba(0,0,0,0.2); z-index: 5; }
+        .search-bar { display: flex; align-items: center; gap: 12px; background: var(--bg-card); padding: 14px 20px; border-radius: var(--radius-pill); box-shadow: var(--card-shadow); margin-bottom: 12px; }
+        .search-bar input { border: none; background: transparent; width: 100%; font-weight: 700; color: var(--text-main); outline: none; font-size: 0.95rem; }
+        .filter-row { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 14px; }
+        .filter-chip { padding: 8px 13px; border-radius: var(--radius-pill); font-size: 0.78rem; font-weight: 800; border: none; cursor: pointer; transition: all 0.25s; background: var(--bg-card); color: var(--text-sec); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .filter-chip.active { color: #fff; transform: scale(1.04); box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+        .task-scroll { flex: 1; overflow-y: auto; padding: 4px 20px 130px; -webkit-overflow-scrolling: touch; }
+        .task-card { background: var(--bg-card); padding: 16px; border-radius: var(--radius-card); margin-bottom: 12px; display: flex; align-items: center; gap: 14px; box-shadow: var(--card-shadow); border-left: 6px solid transparent; transition: opacity 0.3s, transform 0.3s; }
+        .task-card.done { opacity: 0.5; }
+        .task-card.done .task-title { text-decoration: line-through; }
+        .task-card.p-high { border-left-color: var(--prio-high); }
+        .task-card.p-med { border-left-color: var(--prio-med); }
+        .task-card.p-low { border-left-color: var(--prio-low); }
+        .check-box { width: 28px; height: 28px; min-width: 28px; border: 3px solid var(--text-sec); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1); color: transparent; font-size: 0.9rem; }
+        .check-box.checked { background: var(--icon-color); border-color: var(--icon-color); color: #fff; transform: rotate(8deg) scale(1.1); }
+        .task-body { flex: 1; min-width: 0; }
+        .task-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 5px; line-height: 1.3; word-break: break-word; }
+        .task-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 0.7rem; font-weight: 800; color: var(--text-sec); }
+        .meta-badge { padding: 2px 8px; border-radius: 6px; font-size: 0.68rem; font-weight: 800; }
+        .meta-cat { color: #fff; }
+        .task-actions { display: flex; gap: 6px; flex-shrink: 0; }
+        .mini-btn { width: 32px; height: 32px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; color: var(--text-sec); background: rgba(0,0,0,0.04); transition: 0.2s; }
+        .mini-btn.ed:hover { background: #E3F2FD; color: var(--icon-color); }
+        .mini-btn.dl:hover { background: #FFEBEE; color: #EF5350; }
+        .fab { position: fixed; bottom: 32px; right: 32px; width: 68px; height: 68px; background: var(--primary-grad); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: var(--btn-shadow); z-index: 100; border: 4px solid var(--bg-card); cursor: pointer; transition: transform 0.2s; }
+        .fab:active { transform: scale(0.88); }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-sec); }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); backdrop-filter: blur(6px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .overlay.open { opacity: 1; pointer-events: auto; }
+        .modal-box { background: var(--bg-card); width: 92%; max-width: 380px; max-height: 88vh; overflow-y: auto; border-radius: 32px; padding: 28px 24px; transform: scale(0.9) translateY(20px); transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); box-shadow: 0 24px 60px rgba(0,0,0,0.18); }
+        .overlay.open .modal-box { transform: scale(1) translateY(0); }
+        .modal-box h3 { font-size: 1.35rem; margin-bottom: 20px; font-weight: 900; }
+        .prio-row { display: flex; gap: 8px; margin-bottom: 18px; }
+        .prio-opt { flex: 1; padding: 11px 6px; border-radius: 14px; border: 2px solid rgba(0,0,0,0.06); background: var(--bg-app); font-weight: 800; font-size: 0.78rem; cursor: pointer; text-align: center; transition: 0.2s; color: var(--text-sec); }
+        .prio-opt.sel { color: #fff; border-color: transparent; }
+        .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
+        .cat-opt { padding: 11px 4px; border-radius: 14px; border: 2px solid transparent; background: var(--bg-app); text-align: center; font-weight: 800; font-size: 0.78rem; color: var(--text-sec); cursor: pointer; transition: 0.2s; }
+        .cat-opt.sel { color: #fff; border-color: transparent; }
+        .date-picker-wrap { margin-bottom: 20px; }
+        .date-picker-label { font-size: 0.78rem; font-weight: 800; color: var(--text-sec); display: block; margin-bottom: 8px; text-align: left; }
+        .date-picker-btn { width: 100%; padding: 14px 18px; border-radius: var(--radius-btn); border: 2px dashed var(--icon-light); background: rgba(2,136,209,0.06); display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; position: relative; }
+        .date-picker-btn:hover { background: rgba(2,136,209,0.12); }
+        .date-picker-btn.date-error { border-color: var(--prio-high); border-style: solid; background: rgba(255,82,80,0.06); }
+        .cal-icon { font-size: 1.4rem; color: var(--icon-color); flex-shrink: 0; }
+        .cal-text { font-weight: 700; color: var(--text-main); font-size: 0.95rem; }
+        .cal-text.placeholder { color: var(--text-sec); opacity: 0.6; }
+        .cal-error-text { font-size: 0.72rem; font-weight: 800; color: var(--prio-high); margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+        .cal-clear { position: absolute; right: 14px; width: 28px; height: 28px; border-radius: 50%; background: rgba(0,0,0,0.06); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; color: var(--text-sec); transition: 0.2s; z-index: 20; }
+        .cal-clear:hover { background: #FFEBEE; color: #EF5350; }
+        .date-hidden-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; font-size: 18px; }
+        .settings-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 3000; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .settings-overlay.open { opacity: 1; pointer-events: auto; }
+        .settings-drawer { position: absolute; top: 0; right: 0; bottom: 0; width: 82%; max-width: 310px; background: var(--bg-card); box-shadow: -8px 0 40px rgba(0,0,0,0.1); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.22, 0.8, 0.36, 1); padding: 28px 22px; display: flex; flex-direction: column; border-radius: 28px 0 0 28px; }
+        .settings-overlay.open .settings-drawer { transform: translateX(0); }
+        .timer-display { text-align: center; margin-bottom: 24px; }
+        .timer-circle { width: 160px; height: 160px; border-radius: 50%; margin: 0 auto 16px; position: relative; display: flex; align-items: center; justify-content: center; }
+        .timer-circle svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+        .timer-circle circle { fill: none; stroke-width: 6; stroke-linecap: round; }
+        .timer-bg { stroke: var(--bg-app); }
+        .timer-progress { stroke: var(--icon-color); transition: stroke-dashoffset 1s linear; }
+        .timer-inner { text-align: center; z-index: 2; }
+        .timer-time { font-size: 2.2rem; font-weight: 900; color: var(--text-main); line-height: 1; }
+        .timer-label-text { font-size: 0.75rem; font-weight: 800; color: var(--text-sec); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+        .timer-presets { display: flex; gap: 8px; margin-bottom: 20px; }
+        .timer-preset-btn { flex: 1; padding: 10px 6px; border-radius: 14px; border: 2px solid rgba(0,0,0,0.06); background: var(--bg-app); font-weight: 800; font-size: 0.78rem; cursor: pointer; text-align: center; transition: 0.2s; color: var(--text-sec); }
+        .timer-preset-btn.sel { background: var(--icon-color); color: #fff; border-color: var(--icon-color); }
+        .timer-controls { display: flex; gap: 10px; }
+        .timer-btn { flex: 1; padding: 14px; border-radius: var(--radius-btn); border: none; font-weight: 800; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 20px; }
+        .week-day { text-align: center; }
+        .week-day-label { font-size: 0.65rem; font-weight: 800; color: var(--text-sec); margin-bottom: 6px; text-transform: uppercase; }
+        .week-day-bar { width: 100%; height: 80px; border-radius: 10px; background: var(--bg-app); position: relative; overflow: hidden; display: flex; align-items: flex-end; }
+        .week-day-fill { width: 100%; border-radius: 10px; background: var(--primary-grad); transition: height 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+        .week-day-num { font-size: 0.75rem; font-weight: 900; color: var(--text-main); margin-top: 4px; }
+        .week-day-today .week-day-bar { box-shadow: 0 0 0 2px var(--icon-color); }
+        .week-stats { display: flex; justify-content: space-around; margin-bottom: 16px; }
+        .week-stat { text-align: center; }
+        .week-stat-val { font-size: 1.3rem; font-weight: 900; color: var(--text-main); }
+        .week-stat-label { font-size: 0.7rem; font-weight: 700; color: var(--text-sec); }
+        .week-best-day { background: rgba(2,136,209,0.06); padding: 12px 16px; border-radius: 16px; display: flex; align-items: center; gap: 12px; }
+        .week-best-icon { font-size: 1.4rem; color: var(--icon-color); }
+        .week-best-text { font-size: 0.85rem; font-weight: 800; color: var(--text-main); line-height: 1.3; }
+        .due-list { display: flex; flex-direction: column; gap: 10px; max-height: 55vh; overflow-y: auto; }
+        .due-empty { text-align: center; padding: 30px 20px; }
+        .due-empty-icon { font-size: 3rem; color: var(--icon-light); margin-bottom: 12px; opacity: 0.5; }
+        .due-empty p { font-weight: 700; color: var(--text-sec); font-size: 0.9rem; line-height: 1.4; }
+        .bear-svg { filter: drop-shadow(0 8px 16px rgba(2,136,209,0.12)); }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect, useCallback, useRef, useMemo } = React;
+
+        const LOVE_MSGS = [
+            "Hoy te amo más que ayer, osito mío",
+            "Eres la razón de mi sonrisa cada día",
+            "Contigo todo se siente más fácil",
+            "Gracias por ser mi lugar seguro",
+            "Eres mi persona favorita en el mundo",
+            "Cada momento contigo es un regalo",
+            "Te elijo hoy, mañana y siempre",
+            "Mi corazón es tuyo, enterito",
+            "Eres lo mejor que me ha pasado",
+            "No hay nadie como tú, mi amor",
+            "Me haces más feliz de lo que imaginas",
+            "Tu existencia hace mi vida mejor"
+        ];
+        const MOTIVATIONS = [
+            "¡Eres increíble, osito!",
+            "¡Un paso más a la meta!",
+            "¡Vamos con todo, mi amor!",
+            "¡Orgullosa de ti!",
+            "¡Tú puedes, confío en ti!",
+            "¡Lo estás haciendo genial!"
+        ];
+        const PRIORITIES = [
+            { id: 'high', label: 'Urgente', color: 'var(--prio-high)' },
+            { id: 'med',  label: 'Media',   color: 'var(--prio-med)' },
+            { id: 'low',  label: 'Baja',    color: 'var(--prio-low)' }
+        ];
+        const CATEGORIES = [
+            { id: 'all',         label: 'Todas',       color: 'var(--icon-color)' },
+            { id: 'salud',       label: 'Salud',       color: 'var(--cat-salud)' },
+            { id: 'trabajo',     label: 'Trabajo',     color: 'var(--cat-trabajo)' },
+            { id: 'familia',     label: 'Familia',     color: 'var(--cat-familia)' },
+            { id: 'universidad', label: 'Universidad', color: 'var(--cat-uni)' },
+            { id: 'novia',       label: 'Novia',       color: 'var(--cat-novia)' }
+        ];
+        const CAT_COLOR = { salud:'var(--cat-salud)', trabajo:'var(--cat-trabajo)', familia:'var(--cat-familia)', universidad:'var(--cat-uni)', novia:'var(--cat-novia)' };
+        const DAY_NAMES = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+
+        /* FIX #1: toastTimer como objeto para evitar conflicto con cierre de Babel */
+        var toastRef = { current: null };
+
+        const formatFecha = function(d) {
+            if (!d) return '';
+            var p = String(d).split('-');
+            return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : d;
+        };
+        /* FIX #2: getDayKey con timezone local para evitar desfase UTC */
+        const getDayKey = function() {
+            var d = new Date();
+            var y = d.getFullYear();
+            var m = String(d.getMonth() + 1).padStart(2, '0');
+            var day = String(d.getDate()).padStart(2, '0');
+            return y + '-' + m + '-' + day;
+        };
+        const getMinDate = function() { return getDayKey(); };
+        const getGreeting = function() { var h = new Date().getHours(); if (h < 12) return 'Buenos días'; if (h < 18) return 'Buenas tardes'; return 'Buenas noches'; };
+        const safeTask = function(t) { return t && typeof t === 'object' ? t : null; };
+        const fmtTimer = function(s) { var m = Math.floor(s / 60); var sec = s % 60; return (m < 10 ? '0' : '') + m + ':' + (sec < 10 ? '0' : '') + sec; };
+
+        /* FIX #3: diffDays con timezone local consistente */
+        const diffDays = function(dateStr) {
+            if (!dateStr) return 999;
+            var parts = String(dateStr).split('-');
+            if (parts.length !== 3) return 999;
+            var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            var today = new Date();
+            d.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
+            return Math.round((d.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        };
+        const isPastDate = function(dateStr) { return diffDays(dateStr) < 0; };
+
+        /* FIX #4: lanzarConfettiAzul y lanzarCorazones con var local */
+        function lanzarConfettiAzul() {
+            var colores = ['#0288D1','#4FC3F7','#81D4FA','#B3E5FC','#FFFFFF','#E1F5FE','#EC407A','#FFCA28','#69F0AE'];
+            var formas = ['50%','4px','0'];
+            for (var i = 0; i < 55; i++) {
+                var el = document.createElement('div');
+                el.className = 'confetti-piece';
+                var size = Math.random() * 10 + 6;
+                var color = colores[Math.floor(Math.random() * colores.length)];
+                var left = Math.random() * 100;
+                var dur = Math.random() * 1.8 + 1.8;
+                var delay = Math.random() * 0.6;
+                var spin = (Math.random() - 0.5) * 1440;
+                var forma = formas[Math.floor(Math.random() * formas.length)];
+                el.style.cssText = 'left:' + left + 'vw;width:' + size + 'px;height:' + size + 'px;background:' + color + ';border-radius:' + forma + ';animation:confettiDrop ' + dur + 's ' + delay + 's ease-in forwards;--spin:' + spin + 'deg;box-shadow:inset -1px -1px 4px rgba(0,0,0,0.1),0 2px 6px rgba(0,0,0,0.08)';
+                document.body.appendChild(el);
+                (function(element, time) {
+                    setTimeout(function() { if (element.parentNode) element.remove(); }, time);
+                })(el, (dur + delay) * 1000 + 200);
+            }
+        }
+        function lanzarCorazones() {
+            for (var i = 0; i < 8; i++) {
+                var el = document.createElement('div');
+                el.className = 'confetti-piece';
+                var size = Math.random() * 14 + 14;
+                var left = 30 + Math.random() * 40;
+                var dur = Math.random() * 1.5 + 2;
+                var delay = Math.random() * 0.5;
+                el.innerHTML = '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '"><path fill="#FF5252" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+                el.style.cssText = 'left:' + left + 'vw;animation:confettiDrop ' + dur + 's ' + delay + 's ease-in forwards;--spin:' + ((Math.random() - 0.5) * 360) + 'deg;background:transparent;box-shadow:none';
+                document.body.appendChild(el);
+                (function(element, time) {
+                    setTimeout(function() { if (element.parentNode) element.remove(); }, time);
+                })(el, (dur + delay) * 1000 + 200);
+            }
+        }
+
+        /* FIX #5: Componentes SVG con cierres correctos de paréntesis */
+        const PolarBear = function(props) {
+            var size = props.size || 90, animate = props.animate || false;
+            return React.createElement('svg', {
+                className: (animate ? 'bear-svg bear-float' : 'bear-svg'),
+                width: size, height: size, viewBox: '0 0 100 100'
+            },
+                React.createElement('circle', {cx:'50',cy:'52',r:'42',fill:'#fff'}),
+                React.createElement('circle', {cx:'20',cy:'26',r:'11',fill:'#fff'}),
+                React.createElement('circle', {cx:'80',cy:'26',r:'11',fill:'#fff'}),
+                React.createElement('circle', {cx:'20',cy:'26',r:'5.5',fill:'#E1F5FE'}),
+                React.createElement('circle', {cx:'80',cy:'26',r:'5.5',fill:'#E1F5FE'}),
+                React.createElement('circle', {cx:'36',cy:'46',r:'4.5',fill:'#0D47A1'}),
+                React.createElement('circle', {cx:'64',cy:'46',r:'4.5',fill:'#0D47A1'}),
+                React.createElement('circle', {cx:'37.8',cy:'44.2',r:'1.8',fill:'#fff'}),
+                React.createElement('circle', {cx:'65.8',cy:'44.2',r:'1.8',fill:'#fff'}),
+                React.createElement('circle', {cx:'27',cy:'60',r:'7',fill:'#FFCDD2',opacity:'0.45'}),
+                React.createElement('circle', {cx:'73',cy:'60',r:'7',fill:'#FFCDD2',opacity:'0.45'}),
+                React.createElement('ellipse', {cx:'50',cy:'66',rx:'14',ry:'9',fill:'#E1F5FE'}),
+                React.createElement('ellipse', {cx:'50',cy:'63',rx:'4',ry:'3.5',fill:'#0D47A1'}),
+                React.createElement('path', {d:'M46 70 Q50 74 54 70',stroke:'#0D47A1',strokeWidth:'1.8',fill:'none',strokeLinecap:'round'})
+            );
+        };
+
+        const GiraffeHead = function(props) {
+            var size = props.size || 48;
+            return React.createElement('svg', {
+                className: 'giraffe-svg', width: size, height: size, viewBox: '0 0 100 100'
+            },
+                React.createElement('rect', {x:'22',y:'28',width:'56',height:'60',rx:'22',fill:'#FFB74D'}),
+                React.createElement('ellipse', {cx:'18',cy:'48',rx:'7',ry:'9',fill:'#FFB74D'}),
+                React.createElement('ellipse', {cx:'82',cy:'48',rx:'7',ry:'9',fill:'#FFB74D'}),
+                React.createElement('ellipse', {cx:'18',cy:'48',rx:'4',ry:'6',fill:'#FFE0B2'}),
+                React.createElement('ellipse', {cx:'82',cy:'48',rx:'4',ry:'6',fill:'#FFE0B2'}),
+                React.createElement('line', {x1:'33',y1:'28',x2:'30',y2:'10',stroke:'#FFB74D',strokeWidth:'5',strokeLinecap:'round'}),
+                React.createElement('line', {x1:'67',y1:'28',x2:'70',y2:'10',stroke:'#FFB74D',strokeWidth:'5',strokeLinecap:'round'}),
+                React.createElement('circle', {cx:'30',cy:'8',r:'5',fill:'#FF8A65'}),
+                React.createElement('circle', {cx:'70',cy:'8',r:'5',fill:'#FF8A65'}),
+                React.createElement('circle', {cx:'30',cy:'8',r:'2.5',fill:'#E65100',opacity:'0.3'}),
+                React.createElement('circle', {cx:'70',cy:'8',r:'2.5',fill:'#E65100',opacity:'0.3'}),
+                React.createElement('circle', {cx:'37',cy:'48',r:'7',fill:'#fff'}),
+                React.createElement('circle', {cx:'63',cy:'48',r:'7',fill:'#fff'}),
+                React.createElement('circle', {cx:'38.5',cy:'47',r:'4.5',fill:'#3E2723'}),
+                React.createElement('circle', {cx:'64.5',cy:'47',r:'4.5',fill:'#3E2723'}),
+                React.createElement('circle', {cx:'40',cy:'45',r:'1.8',fill:'#fff'}),
+                React.createElement('circle', {cx:'66',cy:'45',r:'1.8',fill:'#fff'}),
+                React.createElement('ellipse', {cx:'50',cy:'70',rx:'16',ry:'11',fill:'#FFE0B2'}),
+                React.createElement('ellipse', {cx:'50',cy:'66',rx:'7',ry:'4',fill:'#FF8A65'}),
+                React.createElement('circle', {cx:'47',cy:'66',r:'1.5',fill:'#BF360C'}),
+                React.createElement('circle', {cx:'53',cy:'66',r:'1.5',fill:'#BF360C'}),
+                React.createElement('path', {d:'M44 73 Q50 78 56 73',stroke:'#BF360C',strokeWidth:'1.8',fill:'none',strokeLinecap:'round'}),
+                React.createElement('path', {d:'M46 72 Q50 75 54 72',stroke:'#BF360C',strokeWidth:'1',fill:'none',strokeLinecap:'round',opacity:'0.4'}),
+                React.createElement('circle', {cx:'28',cy:'60',r:'6',fill:'#FFCCBC',opacity:'0.5'}),
+                React.createElement('circle', {cx:'72',cy:'60',r:'6',fill:'#FFCCBC',opacity:'0.5'}),
+                React.createElement('circle', {cx:'36',cy:'84',r:'4',fill:'#F57C00',opacity:'0.35'}),
+                React.createElement('circle', {cx:'50',cy:'86',r:'5',fill:'#F57C00',opacity:'0.35'}),
+                React.createElement('circle', {cx:'64',cy:'83',r:'3.5',fill:'#F57C00',opacity:'0.35'}),
+                React.createElement('circle', {cx:'34',cy:'32',r:'4',fill:'#F57C00',opacity:'0.3'}),
+                React.createElement('circle', {cx:'58',cy:'30',r:'5',fill:'#F57C00',opacity:'0.3'}),
+                React.createElement('circle', {cx:'68',cy:'38',r:'3',fill:'#F57C00',opacity:'0.25'}),
+                React.createElement('line', {x1:'31',y1:'42',x2:'29',y2:'39',stroke:'#5D4037',strokeWidth:'1.2',strokeLinecap:'round'}),
+                React.createElement('line', {x1:'37',y1:'41',x2:'36',y2:'38',stroke:'#5D4037',strokeWidth:'1.2',strokeLinecap:'round'}),
+                React.createElement('line', {x1:'63',y1:'41',x2:'64',y2:'38',stroke:'#5D4037',strokeWidth:'1.2',strokeLinecap:'round'}),
+                React.createElement('line', {x1:'69',y1:'42',x2:'71',y2:'39',stroke:'#5D4037',strokeWidth:'1.2',strokeLinecap:'round'})
+            );
+        };
+
+        const HeartIcon = function(props) {
+            var big = props.big || false;
+            return React.createElement('svg', {
+                className: 'heart-beat',
+                viewBox: '0 0 256 256',
+                style: {
+                    width: big ? '4rem' : '1.8rem',
+                    height: big ? '4rem' : '1.8rem',
+                    color: 'var(--icon-color)',
+                    filter: big ? 'drop-shadow(0 8px 24px rgba(2,136,209,0.35))' : 'none'
+                }
+            },
+                React.createElement('path', {
+                    fill: 'currentColor',
+                    d: 'M128 216.8c-6.4-4.8-12.8-10-19.2-15.2-32-25.6-64-49.6-76.8-62.4-14.4-14.4-22.4-33.6-22.4-54.4 0-36 27.2-64 64-64 16 0 32 6.4 44.8 17.6 11.2-11.2 27.2-17.6 44.8-17.6 36 0 64 28 64 64 0 20.8-8 40-22.4 54.4-12.8 12.8-44.8 36.8-76.8 62.4-6.4 5.6-12.8 10.4-19.2 15.2z'
+                })
+            );
+        };
+
+        /* FIX #6: AuthScreen con cierre correcto en el form */
+        const AuthScreen = function(props) {
+            var onLogin = props.onLogin;
+            var regArr = useState(false);
+            var reg = regArr[0];
+            var setReg = regArr[1];
+            var loadArr = useState(false);
+            var load = loadArr[0];
+            var setLoad = loadArr[1];
+            var nameArr = useState('');
+            var name = nameArr[0];
+            var setName = nameArr[1];
+
+            var submit = function(e) {
+                e.preventDefault();
+                setLoad(true);
+                setTimeout(function() {
+                    setLoad(false);
+                    onLogin({
+                        name: reg && name.trim() ? name.trim() : 'Osito Polar',
+                        theme: 'light'
+                    });
+                }, 1000);
+            };
+
+            return React.createElement('div', {className: 'auth-container elastic-in'},
+                React.createElement('div', {style: {textAlign: 'center', marginBottom: 32}},
+                    React.createElement(PolarBear, {size: 130, animate: true}),
+                    React.createElement('h1', {style: {fontSize: '2.2rem', color: 'var(--text-main)', marginTop: 8}}, 'Osito Polar'),
+                    React.createElement('p', {style: {color: 'var(--text-sec)', fontWeight: 700}}, 'Hecho con amor para ti')
+                ),
+                React.createElement('div', {className: 'auth-toggle'},
+                    React.createElement('div', {className: 'auth-slider' + (reg ? ' right' : '')}),
+                    React.createElement('div', {className: 'auth-toggle-btn' + (!reg ? ' active' : ''), onClick: function() { setReg(false); }}, 'Ingresar'),
+                    React.createElement('div', {className: 'auth-toggle-btn' + (reg ? ' active' : ''), onClick: function() { setReg(true); }}, 'Crear Cuenta')
+                ),
+                React.createElement('form', {className: 'auth-card', onSubmit: submit},
+                    reg ? React.createElement('input', {
+                        type: 'text', className: 'input-base', placeholder: 'Tu nombre',
+                        value: name, onChange: function(e) { setName(e.target.value); },
+                        style: {marginBottom: 14}, required: true
+                    }) : null,
+                    React.createElement('input', {type: 'email', className: 'input-base', placeholder: 'Correo electrónico', style: {marginBottom: 14}, required: true}),
+                    React.createElement('input', {type: 'password', className: 'input-base', placeholder: 'Contraseña', style: {marginBottom: 22}, required: true}),
+                    React.createElement('button', {type: 'submit', className: 'btn-primary', disabled: load},
+                        load
+                            ? React.createElement('span', null,
+                                React.createElement('i', {className: 'ph ph-spinner', style: {animation: 'spin 1s linear infinite'}}),
+                                ' Cargando...'
+                            )
+                            : (reg ? 'Registrarse' : 'Entrar')
+                    )
+                )
+            );
+        };
+
+        const Settings = function(props) {
+            var open = props.open, onClose = props.onClose, user = props.user, onSave = props.onSave, onLogout = props.onLogout, theme = props.theme, onToggleTheme = props.onToggleTheme;
+            var nmArr = useState(user ? user.name : '');
+            var nm = nmArr[0];
+            var setNm = nmArr[1];
+            useEffect(function() { if (open) setNm(user ? user.name : ''); }, [open, user]);
+            if (!open) return null;
+            return React.createElement('div', {className: 'settings-overlay open', onClick: onClose},
+                React.createElement('div', {className: 'settings-drawer slide-up', onClick: function(e) { e.stopPropagation(); }},
+                    React.createElement('div', {style: {display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28}},
+                        React.createElement('h2', {style: {fontSize: '1.4rem', fontWeight: 900}}, 'Perfil'),
+                        React.createElement('button', {className: 'mini-btn', onClick: onClose}, React.createElement('i', {className: 'ph ph-x'}))
+                    ),
+                    React.createElement('div', {style: {textAlign: 'center', marginBottom: 28}},
+                        React.createElement(PolarBear, {size: 80}),
+                        React.createElement('input', {
+                            value: nm, onChange: function(e) { setNm(e.target.value); },
+                            style: {border: 'none', background: 'transparent', textAlign: 'center', fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)', outline: 'none', borderBottom: '2px dashed var(--text-sec)', width: '100%', marginTop: 8, padding: '4px 0'}
+                        })
+                    ),
+                    React.createElement('button', {
+                        className: 'btn-secondary', style: {width: '100%', marginBottom: 10},
+                        onClick: function() { onSave(Object.assign({}, user, {name: nm})); onClose(); }
+                    }, 'Guardar Nombre'),
+                    React.createElement('button', {
+                        className: 'btn-secondary',
+                        style: {width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center'},
+                        onClick: onToggleTheme
+                    },
+                        React.createElement('span', null, 'Modo ' + (theme === 'light' ? 'Oscuro' : 'Claro')),
+                        React.createElement('i', {className: 'ph ' + (theme === 'light' ? 'ph-moon-stars' : 'ph-sun-dim'), style: {fontSize: '1.2rem'}})
+                    ),
+                    React.createElement('div', {style: {marginTop: 'auto', paddingTop: 24}},
+                        React.createElement('button', {
+                            onClick: onLogout,
+                            style: {width: '100%', background: '#FFEBEE', color: '#C62828', padding: 16, borderRadius: 20, fontWeight: 800, border: 'none', cursor: 'pointer', fontSize: '0.95rem'}
+                        }, 'Cerrar Sesión')
+                    )
+                )
+            );
+        };
+
+        const DueSoonModal = function(props) {
+            var open = props.open, onClose = props.onClose, tasks = props.tasks;
+            if (!open) return null;
+            var pendingWithDate = tasks.filter(function(t) {
+                var st = safeTask(t);
+                return st && !st.completed && st.date;
+            }).sort(function(a, b) { return diffDays(a.date) - diffDays(b.date); });
+
+            var urgentes = pendingWithDate.filter(function(t) { return diffDays(t.date) <= 0; });
+            var hoy = pendingWithDate.filter(function(t) { return diffDays(t.date) === 1; });
+            var pronto = pendingWithDate.filter(function(t) { var d = diffDays(t.date); return d > 1 && d <= 3; });
+            var despues = pendingWithDate.filter(function(t) { return diffDays(t.date) > 3; });
+            var noDate = tasks.filter(function(t) { return safeTask(t) && !t.completed && !t.date; });
+
+            var listElements = null;
+            if (pendingWithDate.length === 0 && noDate.length === 0) {
+                listElements = React.createElement('div', {className: 'due-empty'},
+                    React.createElement('div', {className: 'due-empty-icon'}, React.createElement('i', {className: 'ph ph-check-circle'})),
+                    React.createElement('p', {style: {fontWeight: 700, fontSize: '0.95rem', marginBottom: 6}}, '¡Sin tareas pendientes con fecha!'),
+                    React.createElement('p', {style: {fontWeight: 600, fontSize: '0.82rem', color: 'var(--text-sec)', lineHeight: 1.4}}, 'Agrega una fecha límite a tus misiones para verlas aquí.')
+                );
+            } else {
+                listElements = React.createElement('div', {className: 'due-list'},
+                    urgentes.length > 0 ? React.createElement('div', {
+                        style: {marginBottom: '16px', display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: '14px', background: 'rgba(255,82,80,0.06)'}
+                    },
+                        React.createElement('i', {className: 'ph ph-warning', style: {color: 'var(--prio-high)', fontSize: '1.1rem'}}),
+                        React.createElement('span', {style: {fontWeight: 800, fontSize: '0.85rem', color: 'var(--prio-high)'}}, urgentes.length + ' vencida' + (urgentes.length !== 1 ? 's' : ''))
+                    ) : null,
+                    hoy.length > 0 ? React.createElement('div', {
+                        style: {marginBottom: '14px', display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: '14px', background: 'rgba(255,171,64,0.06)'}
+                    },
+                        React.createElement('i', {className: 'ph ph-clock', style: {color: 'var(--prio-med)', fontSize: '1.1rem'}}),
+                        React.createElement('span', {style: {fontWeight: 800, fontSize: '0.85rem', color: 'var(--prio-med)'}}, hoy.length + ' para hoy'),
+                        React.createElement('span', {style: {fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-sec)'}}, ' — No se te olvide, osito')
+                    ) : null,
+                    pronto.length > 0 ? React.createElement('div', {
+                        style: {marginBottom: '14px', display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: '14px', background: 'rgba(79,195,247,0.06)'}
+                    },
+                        React.createElement('i', {className: 'ph ph-clock', style: {color: 'var(--icon-light)', fontSize: '1.1rem'}}),
+                        React.createElement('span', {style: {fontWeight: 800, fontSize: '0.85rem', color: 'var(--icon-light)'}}, 'Próximas (' + pronto.length + ')')
+                    ) : null,
+                    despues.length > 0 ? React.createElement('div', {
+                        style: {marginBottom: '14px', display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: '14px', background: 'rgba(0,191,165,0.06)'}
+                    },
+                        React.createElement('i', {className: 'ph ph-calendar-check', style: {color: 'var(--cat-salud)', fontSize: '1.1rem'}}),
+                        React.createElement('span', {style: {fontWeight: 800, fontSize: '0.85rem', color: 'var(--cat-salud)'}}, 'Después (' + despues.length + ')')
+                    ) : null,
+                    React.createElement('div', {style: {height: '1px', background: 'var(--bg-app)', margin: '12px 0'}}),
+                    noDate.length > 0 ? React.createElement('div', {
+                        style: {display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: '14px', background: 'var(--bg-app)'}
+                    },
+                        React.createElement('i', {className: 'ph ph-calendar-x', style: {color: 'var(--text-sec)', fontSize: '1.1rem'}}),
+                        React.createElement('span', {style: {fontWeight: 800, fontSize: '0.85rem', color: 'var(--text-sec)'}}, noDate.length + ' sin fecha asignada' + (noDate.length !== 1 ? 's' : ''))
+                    ) : null,
+                    React.createElement('div', {style: {textAlign: 'center', padding: '6px 0 0', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-sec)', opacity: 0.6}}, 'Solo se muestran tareas pendientes con fecha límite')
+                );
+            }
+            return React.createElement('div', {className: 'overlay open', onClick: onClose},
+                React.createElement('div', {className: 'modal-box slide-up', onClick: function(e) { e.stopPropagation(); }},
+                    React.createElement('h3', null,
+                        React.createElement('i', {className: 'ph ph-alarm', style: {marginRight: 8, color: 'var(--prio-high)'}}),
+                        'Tareas por Vencer'
+                    ),
+                    listElements
+                )
+            );
+        };
+
+        const FocusTimer = function(props) {
+            var open = props.open, onClose = props.onClose;
+            var presetArr = useState(25); var preset = presetArr[0]; var setPreset = presetArr[1];
+            var timeArr = useState(25 * 60); var time = timeArr[0]; var setTime = timeArr[1];
+            var runningArr = useState(false); var running = runningArr[0]; var setRunning = runningArr[1];
+            var intervalRef = useRef(null);
+            var totalRef = useRef(25 * 60);
+
+            useEffect(function() {
+                if (!open) { setRunning(false); if (intervalRef.current) clearInterval(intervalRef.current); }
+            }, [open]);
+
+            var selectPreset = function(m) {
+                setPreset(m); setTime(m * 60); totalRef.current = m * 60; setRunning(false);
+                if (intervalRef.current) clearInterval(intervalRef.current);
+            };
+
+            useEffect(function() {
+                if (running) {
+                    intervalRef.current = setInterval(function() {
+                        setTime(function(t) {
+                            if (t <= 1) { clearInterval(intervalRef.current); setRunning(false); lanzarConfettiAzul(); return 0; }
+                            return t - 1;
+                        });
+                    }, 1000);
+                } else {
+                    if (intervalRef.current) clearInterval(intervalRef.current);
+                }
+                return function() { if (intervalRef.current) clearInterval(intervalRef.current); };
+            }, [running]);
+
+            if (!open) return null;
+            var pct = totalRef.current > 0 ? (1 - time / totalRef.current) : 0;
+            var circumference = 2 * Math.PI * 72;
+            var dashoffset = circumference * (1 - pct);
+
+            return React.createElement('div', {className: 'overlay open', onClick: onClose},
+                React.createElement('div', {className: 'modal-box slide-up', onClick: function(e) { e.stopPropagation(); }},
+                    React.createElement('h3', null,
+                        React.createElement('i', {className: 'ph ph-timer', style: {marginRight: 8, color: 'var(--icon-color)'}}),
+                        'Temporizador de Enfoque'
+                    ),
+                    React.createElement('div', {className: 'timer-display'},
+                        React.createElement('div', {className: 'timer-circle'},
+                            React.createElement('svg', {viewBox: '0 0 160 160'},
+                                React.createElement('circle', {className: 'timer-bg', cx: '80', cy: '80', r: '72'}),
+                                React.createElement('circle', {className: 'timer-progress', cx: '80', cy: '80', r: '72', strokeDasharray: String(circumference), strokeDashoffset: String(dashoffset)})
+                            ),
+                            React.createElement('div', {className: 'timer-inner'},
+                                React.createElement('div', {className: 'timer-time'}, fmtTimer(time)),
+                                React.createElement('div', {className: 'timer-label-text'}, running ? 'En foco' : 'Pausado')
+                            )
+                        )
+                    ),
+                    React.createElement('div', {className: 'timer-presets'},
+                        [5, 15, 25, 45].map(function(m) {
+                            return React.createElement('div', {
+                                key: m,
+                                className: 'timer-preset-btn' + (preset === m ? ' sel' : ''),
+                                onClick: function() { selectPreset(m); }
+                            }, m + ' min');
+                        })
+                    ),
+                    React.createElement('div', {className: 'timer-controls'},
+                        React.createElement('button', {
+                            className: 'timer-btn',
+                            style: {background: 'var(--bg-app)', color: 'var(--text-main)'},
+                            onClick: function() { setTime(totalRef.current); setRunning(false); }
+                        },
+                            React.createElement('i', {className: 'ph ph-arrow-counter-clockwise'}), ' Reset'
+                        ),
+                        React.createElement('button', {
+                            className: 'timer-btn',
+                            style: {background: running ? 'var(--prio-high)' : 'var(--icon-color)', color: '#fff', flex: 2},
+                            onClick: function() { setRunning(!running); }
+                        },
+                            React.createElement('i', {className: 'ph ' + (running ? 'ph-pause' : 'ph-play')}),
+                            ' ' + (running ? 'Pausar' : 'Iniciar')
+                        )
+                    )
+                )
+            );
+        };
+
+        const WeeklyProgress = function(props) {
+            var open = props.open, onClose = props.onClose, tasks = props.tasks;
+            if (!open) return null;
+            var today = new Date();
+            var dayOfWeek = today.getDay();
+            var mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+            var weekData = [];
+            var totalWeek = 0, maxDay = 0, bestDayIdx = 0;
+            for (var i = 0; i < 7; i++) {
+                var d = new Date(today);
+                d.setDate(d.getDate() + mondayOffset + i);
+                var key = getDayKey();
+                var dd = new Date(d);
+                var ky = dd.getFullYear() + '-' + String(dd.getMonth() + 1).padStart(2, '0') + '-' + String(dd.getDate()).padStart(2, '0');
+                var count = tasks.filter(function(t) { return safeTask(t) && t.completed && t.completedDate === ky; }).length;
+                weekData.push({day: DAY_NAMES[i], date: d.getDate(), count: count, key: ky});
+                totalWeek += count;
+                if (count > maxDay) { maxDay = count; bestDayIdx = i; }
+            }
+            return React.createElement('div', {className: 'overlay open', onClick: onClose},
+                React.createElement('div', {className: 'modal-box slide-up', onClick: function(e) { e.stopPropagation(); }},
+                    React.createElement('h3', null,
+                        React.createElement('i', {className: 'ph ph-chart-bar', style: {marginRight: 8, color: 'var(--icon-color)'}}),
+                        'Progreso Semanal'
+                    ),
+                    React.createElement('div', {className: 'week-stats'},
+                        React.createElement('div', {className: 'week-stat'},
+                            React.createElement('div', {className: 'week-stat-val'}, String(totalWeek)),
+                            React.createElement('div', {className: 'week-stat-label'}, 'Esta semana')
+                        ),
+                        React.createElement('div', {className: 'week-stat'},
+                            React.createElement('div', {className: 'week-stat-val'}, String(maxDay)),
+                            React.createElement('div', {className: 'week-stat-label'}, 'Mejor día')
+                        ),
+                        React.createElement('div', {className: 'week-stat'},
+                            React.createElement('div', {className: 'week-stat-val'}, totalWeek > 0 ? String(Math.round(totalWeek / 7 * 10) / 10) : '0'),
+                            React.createElement('div', {className: 'week-stat-label'}, 'Promedio/día')
+                        )
+                    ),
+                    React.createElement('div', {className: 'week-grid'},
+                        weekData.map(function(w, idx) {
+                            var h = maxDay > 0 ? Math.max(4, (w.count / maxDay) * 100) : 4;
+                            var isToday = w.key === getDayKey();
+                            return React.createElement('div', {key: idx, className: 'week-day' + (isToday ? ' week-day-today' : '')},
+                                React.createElement('div', {className: 'week-day-label'}, w.day),
+                                React.createElement('div', {className: 'week-day-bar'},
+                                    React.createElement('div', {className: 'week-day-fill', style: {height: h + '%', animation: 'progressFill 0.6s ' + (idx * 0.08) + 's ease-out both'}})
+                                ),
+                                React.createElement('div', {className: 'week-day-num'}, w.count > 0 ? w.count : w.date)
+                            );
+                        })
+                    ),
+                    maxDay > 0
+                        ? React.createElement('div', {className: 'week-best-day'},
+                            React.createElement('i', {className: 'ph ph-trophy week-best-icon'}),
+                            React.createElement('div', {className: 'week-best-text'}, 'Tu mejor día fue ' + weekData[bestDayIdx].day + ' con ' + maxDay + ' tarea' + (maxDay !== 1 ? 's' : '') + ' completada' + (maxDay !== 1 ? 's' : ''))
+                        )
+                        : React.createElement('div', {className: 'week-best-day'},
+                            React.createElement('i', {className: 'ph ph-star week-best-icon', style: {color: 'var(--cat-novia)'}}),
+                            React.createElement('div', {className: 'week-best-text'}, '¡Empieza esta semana completando tu primera tarea!')
+                        )
+                )
+            );
+        };
+
+        /* FIX #7: TaskModal con cal-text cerrado correctamente y fecha pasada manejada con requestAnimationFrame */
+        const TaskModal = function(props) {
+            var open = props.open, onClose = props.onClose, onSave = props.onSave, editTask = props.editTask;
+            var textArr = useState(''); var text = textArr[0]; var setText = textArr[1];
+            var catArr = useState('novia'); var cat = catArr[0]; var setCat = catArr[1];
+            var prioArr = useState('med'); var prio = prioArr[0]; var setPrio = prioArr[1];
+            var dateArr = useState(''); var date = dateArr[0]; var setDate = dateArr[1];
+            var dateErrArr = useState(false); var dateErr = dateErrArr[0]; var setDateErr = dateErrArr[1];
+            var shakeArr = useState(false); var shaking = shakeArr[0]; var setShaking = shakeArr[1];
+            var dateRef = useRef(null);
+
+            useEffect(function() {
+                if (open) {
+                    var t = safeTask(editTask);
+                    if (t) {
+                        setText(t.text || '');
+                        setCat(t.category || 'novia');
+                        setPrio(t.priority || 'med');
+                    } else {
+                        setText(''); setCat('novia'); setPrio('med');
+                    }
+                    var initialDate = '';
+                    if (t && t.date && !isPastDate(t.date)) { initialDate = t.date; }
+                    setDate(initialDate);
+                    setDateErr(false);
+                    setShaking(false);
+                    requestAnimationFrame(function() {
+                        if (dateRef.current) dateRef.current.value = initialDate;
+                    });
+                }
+            }, [open, editTask]);
+
+            if (!open) return null;
+
+            var handleDateChange = function(e) {
+                var val = e.target.value;
+                if (val && isPastDate(val)) {
+                    setDateErr(true);
+                    setShaking(true);
+                    setTimeout(function() { setShaking(false); }, 450);
+                    setDate('');
+                    requestAnimationFrame(function() { if (dateRef.current) dateRef.current.value = ''; });
+                    return;
+                }
+                setDateErr(false);
+                setDate(val);
+            };
+
+            var clearDate = function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                setDate('');
+                setDateErr(false);
+                requestAnimationFrame(function() { if (dateRef.current) dateRef.current.value = ''; });
+            };
+
+            var openCalendar = function(e) {
+                e.preventDefault();
+                if (dateRef.current) {
+                    if (typeof dateRef.current.showPicker === 'function') dateRef.current.showPicker();
+                    else dateRef.current.click();
+                }
+            };
+
+            var guardar = function() {
+                if (!text.trim() || dateErr) return;
+                onSave({
+                    text: text.trim(), category: cat, priority: prio, date: date
+                }, safeTask(editTask) ? editTask.id : null);
+                onClose();
+            };
+
+            var minDate = getMinDate();
+
+            return React.createElement('div', {className: 'overlay open', onClick: onClose},
+                React.createElement('div', {className: 'modal-box elastic-in', onClick: function(e) { e.stopPropagation(); }},
+                    React.createElement('h3', null, editTask ? 'Editar Misión' : 'Nueva Misión'),
+                    React.createElement('textarea', {
+                        className: 'input-base', rows: '3', placeholder: '¿Qué necesitas hacer?',
+                        value: text, onChange: function(e) { setText(e.target.value); },
+                        style: {marginBottom: 18, resize: 'none'}
+                    }),
+                    React.createElement('span', {className: 'date-picker-label'}, 'Prioridad'),
+                    React.createElement('div', {className: 'prio-row'},
+                        PRIORITIES.map(function(p) {
+                            return React.createElement('div', {
+                                key: p.id,
+                                className: 'prio-opt' + (prio === p.id ? ' sel' : ''),
+                                onClick: function() { setPrio(p.id); },
+                                style: prio === p.id ? {background: p.color, borderColor: p.color} : {}
+                            }, p.label);
+                        })
+                    ),
+                    React.createElement('span', {className: 'date-picker-label'}, 'Categoría'),
+                    React.createElement('div', {className: 'cat-grid'},
+                        CATEGORIES.filter(function(c) { return c.id !== 'all'; }).map(function(c) {
+                            return React.createElement('div', {
+                                key: c.id,
+                                className: 'cat-opt' + (cat === c.id ? ' sel' : ''),
+                                onClick: function() { setCat(c.id); },
+                                style: cat === c.id ? {background: c.color, borderColor: c.color} : {}
+                            }, c.label);
+                        })
+                    ),
+                    React.createElement('div', {className: 'date-picker-wrap'},
+                        React.createElement('span', {className: 'date-picker-label'}, 'Fecha límite'),
+                        React.createElement('div', {
+                            className: 'date-picker-btn' + (dateErr ? ' date-error' : '') + (shaking ? ' shake-x' : ''),
+                            onClick: openCalendar
+                        },
+                            React.createElement('i', {className: 'ph ph-calendar-blank cal-icon'}),
+                            React.createElement('span', {
+                                className: 'cal-text' + (date ? '' : ' placeholder')
+                            }, date ? formatFecha(date) : 'Seleccionar fecha'),
+                            date ? React.createElement('button', {
+                                className: 'cal-clear', onClick: clearDate
+                            }, React.createElement('i', {className: 'ph ph-x'})) : null,
+                            React.createElement('input', {
+                                ref: dateRef, type: 'date', className: 'date-hidden-input',
+                                value: date, min: minDate, onChange: handleDateChange
+                            })
+                        ),
+                        dateErr ? React.createElement('div', {className: 'cal-error-text'},
+                            React.createElement('i', {className: 'ph ph-warning-circle'}),
+                            ' No puedes elegir una fecha pasada, osito'
+                        ) : null
+                    ),
+                    React.createElement('button', {className: 'btn-primary', onClick: guardar},
+                        editTask ? 'Guardar Cambios' : 'Crear Misión'
+                    )
+                )
+            );
+        };
+
+        const DeleteModal = function(props) {
+            if (!props.open) return null;
+            return React.createElement('div', {className: 'overlay open', onClick: props.onClose},
+                React.createElement('div', {
+                    className: 'modal-box elastic-in',
+                    onClick: function(e) { e.stopPropagation(); },
+                    style: {maxWidth: 300}
+                },
+                    React.createElement('div', {style: {fontSize: '3rem', marginBottom: 8, color: 'var(--icon-color)'}},
+                        React.createElement('i', {className: 'ph ph-warning-circle'})
+                    ),
+                    React.createElement('h3', {style: {marginBottom: 6}}, '¿Borrar esta tarea?'),
+                    React.createElement('p', {style: {color: 'var(--text-sec)', fontSize: '0.9rem', marginBottom: 20}}, 'Esta acción no se puede deshacer.'),
+                    React.createElement('div', {style: {display: 'flex', gap: 10}},
+                        React.createElement('button', {className: 'btn-secondary', style: {flex: 1}, onClick: props.onClose}, 'Cancelar'),
+                        React.createElement('button', {
+                            className: 'btn-primary',
+                            style: {flex: 1, background: 'linear-gradient(135deg,#FF5252,#FF1744)'},
+                            onClick: props.onConfirm
+                        }, 'Borrar')
+                    )
+                )
+            );
+        };
+
+        /* FIX #8: Dashboard con streak en dependencias, conteos antes del JSX, y cleanup del toast */
+        const Dashboard = function(props) {
+            var user = props.user, onLogout = props.onLogout, onUpdateUser = props.onUpdateUser;
+            var tasksArr = useState([]); var tasks = tasksArr[0]; var setTasks = tasksArr[1];
+            var searchArr = useState(''); var search = searchArr[0]; var setSearch = searchArr[1];
+            var filterCatArr = useState('all'); var filterCat = filterCatArr[0]; var setFilterCat = filterCatArr[1];
+            var modalOpenArr = useState(false); var modalOpen = modalOpenArr[0]; var setModalOpen = modalOpenArr[1];
+            var editTaskArr = useState(null); var editTask = editTaskArr[0]; var setEditTask = editTaskArr[1];
+            var delIdArr = useState(null); var delId = delIdArr[0]; var setDelId = delIdArr[1];
+            var settingsOpenArr = useState(false); var settingsOpen = settingsOpenArr[0]; var setSettingsOpen = settingsOpenArr[1];
+            var themeArr = useState(user ? user.theme : 'light'); var theme = themeArr[0]; var setTheme = themeArr[1];
+            var toastArr = useState(''); var toast = toastArr[0]; var setToast = toastArr[1];
+            var hugsArr = useState(0); var hugs = hugsArr[0]; var setHugs = hugsArr[1];
+            var noteArr = useState(''); var note = noteArr[0]; var setNote = noteArr[1];
+            var removingIdArr = useState(null); var removingId = removingIdArr[0]; var setRemovingId = removingIdArr[1];
+            var timerOpenArr = useState(false); var timerOpen = timerOpenArr[0]; var setTimerOpen = timerOpenArr[1];
+            var weekOpenArr = useState(false); var weekOpen = weekOpenArr[0]; var setWeekOpen = weekOpenArr[1];
+            var dueOpenArr = useState(false); var dueOpen = dueOpenArr[0]; var setDueOpen = dueOpenArr[1];
+            var streakArr = useState(0); var streak = streakArr[0]; var setStreak = streakArr[1];
+            var motivTextArr = useState(''); var motivText = motivTextArr[0]; var setMotivText = motivTextArr[1];
+            var motivAnimArr = useState('anim-in'); var motivAnim = motivAnimArr[0]; var setMotivAnim = motivAnimArr[1];
+
+            useEffect(function() { document.documentElement.setAttribute('data-theme', theme); }, [theme]);
+
+            useEffect(function() {
+                try {
+                    var raw = localStorage.getItem('op_tasks_v9');
+                    if (raw) {
+                        var parsed = JSON.parse(raw);
+                        var migrated = Array.isArray(parsed)
+                            ? parsed.map(function(t) { return t && typeof t === 'object' ? Object.assign({completedDate: null}, t) : null; }).filter(Boolean)
+                            : [];
+                        setTasks(migrated);
+                    }
+                    var h = localStorage.getItem('op_hugs_v4');
+                    if (h) setHugs(parseInt(h) || 0);
+                    var n = localStorage.getItem('op_note_v5');
+                    if (n) setNote(n);
+                    var sk = localStorage.getItem('op_streak_v3');
+                    if (sk) setStreak(parseInt(sk) || 0);
+                } catch (e) {}
+            }, []);
+
+            /* FIX #8a: streak en dependencias para evitar stale closure */
+            useEffect(function() {
+                var today = getDayKey();
+                var yesterday = new Date(Date.now() - 86400000);
+                var yKey = yesterday.getFullYear() + '-' + String(yesterday.getMonth() + 1).padStart(2, '0') + '-' + String(yesterday.getDate()).padStart(2, '0');
+                var hasToday = tasks.some(function(t) { return safeTask(t) && t.completed && t.completedDate === today; });
+                var hasYesterday = tasks.some(function(t) { return safeTask(t) && t.completed && t.completedDate === yKey; });
+                if (hasToday && streak === 0) {
+                    setStreak(1);
+                    try { localStorage.setItem('op_streak_v3', '1'); } catch (e) {}
+                } else if (!hasToday && !hasYesterday && streak > 0) {
+                    setStreak(0);
+                    try { localStorage.setItem('op_streak_v3', '0'); } catch (e) {}
+                }
+            }, [tasks, streak]);
+
+            useEffect(function() { try { localStorage.setItem('op_tasks_v9', JSON.stringify(tasks)); } catch (e) {} }, [tasks]);
+            useEffect(function() { try { localStorage.setItem('op_hugs_v4', String(hugs)); } catch (e) {} }, [hugs]);
+            var saveNote = function(v) { setNote(v); try { localStorage.setItem('op_note_v5', v); } catch (e) {} };
+
+            useEffect(function() {
+                var idx = Math.floor(Math.random() * LOVE_MSGS.length);
+                setMotivText(LOVE_MSGS[idx]);
+                var interval = setInterval(function() {
+                    setMotivAnim('anim-out');
+                    setTimeout(function() {
+                        idx = (idx + 1) % LOVE_MSGS.length;
+                        setMotivText(LOVE_MSGS[idx]);
+                        setMotivAnim('anim-in');
+                    }, 300);
+                }, 6000);
+                return function() { clearInterval(interval); };
+            }, []);
+
+            var showToast = useCallback(function(msg) {
+                setToast(msg);
+                if (toastRef.current) clearTimeout(toastRef.current);
+                toastRef.current = setTimeout(function() { setToast(''); }, 2800);
+            }, []);
+
+            /* FIX #8b: cleanup del toast al desmontar */
+            useEffect(function() {
+                return function() {
+                    if (toastRef.current) { clearTimeout(toastRef.current); toastRef.current = null; }
+                };
+            }, []);
+
+            var handleSave = function(data, id) {
+                if (id) {
+                    setTasks(function(p) { return p.map(function(t) { return t && t.id === id ? Object.assign({}, t, data) : t; }); });
+                    showToast('Tarea actualizada');
+                } else {
+                    setTasks(function(p) { return [Object.assign({id: Date.now(), completed: false, completedDate: null}, data)].concat(p); });
+                    showToast('Nueva misión creada');
+                }
+                setEditTask(null);
+            };
+
+            var toggleDone = function(id) {
+                setTasks(function(p) {
+                    var task = p.find(function(t) { return t && t.id === id; });
+                    if (task && !task.completed) {
+                        lanzarConfettiAzul();
+                        showToast(MOTIVATIONS[Math.floor(Math.random() * MOTIVATIONS.length)]);
+                        setStreak(function(s) {
+                            var ns = s + 1;
+                            try { localStorage.setItem('op_streak_v3', String(ns)); } catch (e) {}
+                            return ns;
+                        });
+                    }
+                    return p.map(function(t) {
+                        if (!t || t.id !== id) return t;
+                        return Object.assign({}, t, {
+                            completed: !t.completed,
+                            completedDate: !t.completed ? getDayKey() : t.completedDate
+                        });
+                    });
+                });
+            };
+
+            var handleDelete = function() {
+                if (!delId) return;
+                setRemovingId(delId);
+                setTimeout(function() {
+                    setTasks(function(p) { return p.filter(function(t) { return !t || t.id !== delId; }); });
+                    setDelId(null);
+                    setRemovingId(null);
+                    showToast('Tarea eliminada');
+                }, 400);
+            };
+
+            var giveHug = function() {
+                setHugs(function(h) { return h + 1; });
+                lanzarCorazones();
+                showToast('Abrazo #' + (hugs + 1));
+            };
+
+            /* FIX #8c: conteos calculados ANTES de usarse en el JSX */
+            var todayKey = getDayKey();
+            var dueCount = tasks.filter(function(t) { return safeTask(t) && !t.completed && t.date && diffDays(t.date) >= 0; }).length;
+            var todayCount = tasks.filter(function(t) { return safeTask(t) && t.completed && t.completedDate === todayKey; }).length;
+            var completedCount = tasks.filter(function(t) { return safeTask(t) && t.completed; }).length;
+            var pendingCount = tasks.filter(function(t) { return safeTask(t) && !t.completed; }).length;
+
+            var filtered = useMemo(function() {
+                return tasks.filter(function(t) {
+                    var st = safeTask(t);
+                    if (!st) return false;
+                    return (st.text || '').toLowerCase().indexOf(search.toLowerCase()) !== -1 && (filterCat === 'all' || st.category === filterCat);
+                }).sort(function(a, b) {
+                    var sa = safeTask(a), sb = safeTask(b);
+                    if (!sa || !sb) return 0;
+                    if (sa.completed !== sb.completed) return sa.completed ? 1 : -1;
+                    var w = {high: 3, med: 2, low: 1};
+                    return (w[sb.priority] || 2) - (w[sa.priority] || 2);
+                });
+            }, [tasks, search, filterCat]);
+
+            var taskElements = null;
+            if (filtered.length === 0) {
+                taskElements = React.createElement('div', {className: 'empty-state'},
+                    React.createElement(HeartIcon, {big: true}),
+                    React.createElement('p', {style: {fontSize: '1.1rem', fontWeight: 800, marginBottom: 4}},
+                        search || filterCat !== 'all' ? 'Sin resultados' : 'Sin tareas aún'
+                    ),
+                    React.createElement('p', {style: {fontSize: '0.9rem', marginBottom: 20, color: 'var(--text-sec)'}},
+                        search || filterCat !== 'all' ? '¡Todo en orden, osito!' : '¡Todo en orden!'
+                    ),
+                    !search && filterCat === 'all'
+                        ? React.createElement('button', {
+                            className: 'btn-secondary',
+                            onClick: function() { setEditTask(null); setModalOpen(true); }
+                        },
+                            React.createElement('i', {className: 'ph ph-plus-circle', style: {marginRight: 6}}),
+                            ' Añadir tarea'
+                        )
+                        : null
+                );
+            } else {
+                taskElements = filtered.map(function(task, idx) {
+                    var st = safeTask(task);
+                    if (!st) return null;
+                    var prioInfo = PRIORITIES.find(function(p) { return p.id === st.priority; }) || PRIORITIES[1];
+                    var catColor = CAT_COLOR[st.category] || 'var(--text-sec)';
+                    var catLabel = (CATEGORIES.find(function(c) { return c.id === st.category; }) || {}).label || 'General';
+                    return React.createElement('div', {
+                        key: st.id,
+                        className: 'task-card p-' + st.priority + (st.completed ? ' done' : '') + (removingId === st.id ? ' task-removing' : '') + ' task-enter',
+                        style: {animationDelay: (idx * 0.04) + 's'}
+                    },
+                        React.createElement('div', {
+                            className: 'check-box' + (st.completed ? ' checked' : ''),
+                            onClick: function() { toggleDone(st.id); }
+                        }, React.createElement('i', {className: 'ph ph-check-fat-fill'})),
+                        React.createElement('div', {className: 'task-body'},
+                            React.createElement('div', {className: 'task-title'}, st.text),
+                            React.createElement('div', {className: 'task-meta'},
+                                React.createElement('span', {
+                                    className: 'meta-badge',
+                                    style: {background: 'transparent', color: prioInfo.color, border: '1px solid ' + prioInfo.color}
+                                }, prioInfo.label),
+                                React.createElement('span', {
+                                    className: 'meta-badge meta-cat',
+                                    style: {background: catColor}
+                                }, catLabel),
+                                st.date
+                                    ? React.createElement('span', {style: {fontSize: '0.68rem', fontWeight: 800}},
+                                        React.createElement('i', {className: 'ph ph-calendar-blank', style: {marginRight: 3}}),
+                                        formatFecha(st.date)
+                                    )
+                                    : null,
+                                st.completedDate
+                                    ? React.createElement('span', {style: {fontSize: '0.65rem', fontWeight: 800, color: 'var(--cat-salud)'}},
+                                        'Hecha ' + formatFecha(st.completedDate)
+                                    )
+                                    : null
+                            )
+                        ),
+                        React.createElement('div', {className: 'task-actions'},
+                            React.createElement('button', {
+                                className: 'mini-btn ed',
+                                onClick: function() { setEditTask(task); setModalOpen(true); }
+                            }, React.createElement('i', {className: 'ph ph-pencil-simple'})),
+                            React.createElement('button', {
+                                className: 'mini-btn dl',
+                                onClick: function() { setDelId(st.id); }
+                            }, React.createElement('i', {className: 'ph ph-trash'}))
+                        )
+                    );
+                });
+            }
+
+            return React.createElement('div', {className: 'app-layout elastic-in'},
+                React.createElement('div', {className: 'toast-wrap'},
+                    React.createElement('div', {className: 'toast-msg' + (toast ? ' visible' : '')},
+                        React.createElement('i', {className: 'ph ph-check-circle'}), ' ', toast
+                    )
+                ),
+                React.createElement('div', {className: 'top-bar'},
+                    React.createElement('div', {className: 'header-row'},
+                        React.createElement('div', {className: 'header-left'},
+                            React.createElement(GiraffeHead, {size: 48}),
+                            React.createElement('div', {className: 'user-greeting'},
+                                React.createElement('p', null, getGreeting() + ', ' + (user ? user.name : 'Osito')),
+                                React.createElement('h1', null, 'Hoy te amo más que ayer')
+                            )
+                        ),
+                        React.createElement('button', {
+                            className: 'btn-icon pulse-glow',
+                            onClick: function() { setSettingsOpen(true); }
+                        }, React.createElement('i', {className: 'ph ph-gear-six'}))
+                    ),
+                    React.createElement('div', {
+                        className: 'motiv-banner',
+                        onClick: function() {
+                            setMotivAnim('anim-out');
+                            setTimeout(function() {
+                                setMotivText(LOVE_MSGS[Math.floor(Math.random() * LOVE_MSGS.length)]);
+                                setMotivAnim('anim-in');
+                            }, 300);
+                        }
+                    },
+                        React.createElement('i', {className: 'ph ph-heart-fill', style: {color: '#fff', fontSize: '1.2rem', flexShrink: 0, position: 'relative', zIndex: 2}}),
+                        React.createElement('span', {className: 'motiv-text ' + motivAnim}, motivText)
+                    ),
+                    streak > 0
+                        ? React.createElement('div', {className: 'streak-row'},
+                            React.createElement('span', {className: 'streak-fire'},
+                                React.createElement('i', {className: 'ph ph-fire', style: {color: '#FF6D00'}})
+                            ),
+                            React.createElement('span', {className: 'streak-label'}, 'Racha de'),
+                            React.createElement('span', {className: 'streak-num'}, String(streak)),
+                            React.createElement('span', {className: 'streak-label'}, 'días completando')
+                        )
+                        : null,
+                    React.createElement('div', {className: 'func-grid'},
+                        React.createElement('div', {className: 'func-card', onClick: giveHug},
+                            React.createElement('i', {className: 'ph ph-heart func-icon', style: {color: 'var(--cat-novia)'}}),
+                            React.createElement('div', {className: 'func-val'}, String(hugs)),
+                            React.createElement('div', {className: 'func-label'}, 'Abrazos')
+                        ),
+                        React.createElement('div', {className: 'func-card', onClick: function() { setDueOpen(true); }},
+                            React.createElement('i', {className: 'ph ph-alarm func-icon', style: {color: 'var(--prio-high)'}}),
+                            React.createElement('div', {className: 'func-val', style: {color: 'var(--prio-high)'}}, String(dueCount)),
+                            React.createElement('div', {className: 'func-label', style: {color: 'var(--prio-high)', fontSize: '0.68rem'}}, 'Por vencer'),
+                            dueCount > 0
+                                ? React.createElement('div', {className: 'func-badge'}, String(dueCount))
+                                : null
+                        ),
+                        React.createElement('div', {className: 'func-card', onClick: function() { setTimerOpen(true); }},
+                            React.createElement('i', {className: 'ph ph-timer func-icon', style: {color: 'var(--cat-trabajo)'}}),
+                            React.createElement('div', {className: 'func-val'}, String(todayCount)),
+                            React.createElement('div', {className: 'func-label', style: {fontSize: '0.68rem'}}, 'Hechas hoy')
+                        ),
+                        React.createElement('div', {className: 'func-card', onClick: function() { setWeekOpen(true); }},
+                            React.createElement('i', {className: 'ph ph-chart-bar func-icon', style: {color: 'var(--cat-uni)'}}),
+                            React.createElement('div', {className: 'func-val'}, String(completedCount) + '/' + String(tasks.length)),
+                            React.createElement('div', {className: 'func-label', style: {fontSize: '0.68rem'}}, 'Pend: ' + String(pendingCount))
+                        )
+                    ),
+                    React.createElement('div', {className: 'sticky-wrap'},
+                        React.createElement('div', {className: 'note-pin'}),
+                        React.createElement('div', {className: 'sticky-note'},
+                            React.createElement('textarea', {
+                                rows: '2', placeholder: 'Escribe una nota, mi muñeco...',
+                                value: note, onChange: function(e) { saveNote(e.target.value); }
+                            })
+                        )
+                    ),
+                    React.createElement('div', {className: 'search-bar'},
+                        React.createElement('i', {className: 'ph ph-magnifying-glass', style: {fontSize: '1.2rem', color: 'var(--text-sec)'}}),
+                        React.createElement('input', {
+                            type: 'text', placeholder: 'Buscar tareas...',
+                            value: search, onChange: function(e) { setSearch(e.target.value); }
+                        }),
+                        search
+                            ? React.createElement('button', {
+                                onClick: function() { setSearch(''); },
+                                style: {background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-sec)', fontSize: '1.1rem'}
+                            }, React.createElement('i', {className: 'ph ph-x-circle'}))
+                            : null
+                    ),
+                    React.createElement('div', {className: 'filter-row'},
+                        CATEGORIES.map(function(c) {
+                            var isActive = filterCat === c.id;
+                            return React.createElement('button', {
+                                key: c.id,
+                                className: 'filter-chip' + (isActive ? ' active' : ''),
+                                onClick: function() { setFilterCat(c.id); },
+                                style: {
+                                    backgroundColor: isActive ? (c.id === 'all' ? 'var(--icon-color)' : c.color) : 'var(--bg-card)',
+                                    color: isActive ? '#fff' : 'var(--text-sec)'
+                                }
+                            }, c.label);
+                        })
+                    )
+                ),
+                React.createElement('div', {className: 'task-scroll'}, taskElements),
+                React.createElement('button', {
+                    className: 'fab',
+                    onClick: function() { setEditTask(null); setModalOpen(true); }
+                }, React.createElement('i', {className: 'ph ph-plus'})),
+                React.createElement(TaskModal, {
+                    open: modalOpen,
+                    onClose: function() { setModalOpen(false); setEditTask(null); },
+                    onSave: handleSave,
+                    editTask: editTask
+                }),
+                React.createElement(DeleteModal, {
+                    open: !!delId,
+                    onClose: function() { setDelId(null); },
+                    onConfirm: handleDelete
+                }),
+                React.createElement(DueSoonModal, {
+                    open: dueOpen,
+                    onClose: function() { setDueOpen(false); },
+                    tasks: tasks
+                }),
+                React.createElement(FocusTimer, {
+                    open: timerOpen,
+                    onClose: function() { setTimerOpen(false); }
+                }),
+                React.createElement(WeeklyProgress, {
+                    open: weekOpen,
+                    onClose: function() { setWeekOpen(false); },
+                    tasks: tasks
+                }),
+                React.createElement(Settings, {
+                    open: settingsOpen,
+                    onClose: function() { setSettingsOpen(false); },
+                    user: user,
+                    onSave: onUpdateUser,
+                    onLogout: onLogout,
+                    theme: theme,
+                    onToggleTheme: function() { setTheme(function(t) { return t === 'light' ? 'dark' : 'light'; }); }
+                })
+            );
+        };
+
+        /* FIX #9: App con cierre correcto de ReactDOM.createRoot().render() */
+        const App = function() {
+            var userArr = useState(function() {
+                try { var u = localStorage.getItem('op_user_v5'); return u ? JSON.parse(u) : null; }
+                catch (e) { return null; }
+            });
+            var user = userArr[0];
+            var setUser = userArr[1];
+            var handleLogin = function(u) { setUser(u); try { localStorage.setItem('op_user_v5', JSON.stringify(u)); } catch (e) {} };
+            var handleLogout = function() { setUser(null); try { localStorage.removeItem('op_user_v5'); } catch (e) {} };
+            var handleUpdateUser = function(u) { setUser(u); try { localStorage.setItem('op_user_v5', JSON.stringify(u)); } catch (e) {} };
+            return user
+                ? React.createElement(Dashboard, {user: user, onLogout: handleLogout, onUpdateUser: handleUpdateUser})
+                : React.createElement(AuthScreen, {onLogin: handleLogin});
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+    </script>
+</body>
+</html>

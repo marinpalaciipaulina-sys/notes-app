@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "name": "osito-polar-notes",
+  "builds": [
+    {
+      "src": "osito_v3.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/osito_v3.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/osito_v3.html"
+    }
+  ],
+  "outputDirectory": "public"
+}

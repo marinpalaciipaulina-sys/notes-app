@@ -1,0 +1,17 @@
+{
+  "name": "osito-polar-notes",
+  "version": "1.0.0",
+  "description": "Aplicación de notas con oso polar hecha con amor",
+  "main": "osito_v3.html",
+  "scripts": {
+    "start": "serve -s . -l 3000",
+    "build": "echo 'No build needed - static HTML'",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["notes", "polar-bear", "react", "love"],
+  "author": "Osito Polar",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}
