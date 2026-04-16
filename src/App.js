@@ -114,7 +114,7 @@ const AuthScreen = ({ onLogin }) => {
 };
 
 // =========================================
-// SETTINGS PANEL
+// SETTINGS PANEL (Con Oso Polar SVG)
 // =========================================
 const SettingsPanel = ({ isOpen, onClose, user, onUpdateUser, onLogout, theme, toggleTheme }) => {
     const [tempName, setTempName] = useState(user?.name || '');
@@ -133,7 +133,10 @@ const SettingsPanel = ({ isOpen, onClose, user, onUpdateUser, onLogout, theme, t
                 </div>
 
                 <div style={{textAlign: 'center', marginBottom: 30}}>
-                    <div style={{width: 80, height: 80, background: '#E3F2FD', borderRadius: '50%', margin: '0 auto 10px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'2rem'}}>\ud83e\uddfd</div>
+                    <div style={{marginBottom: '10px', display: 'flex', justifyContent: 'center'}}>
+                        <PolarBearSVG size={80} animate={false} />
+                    </div>
+                    
                     <input 
                         type="text" 
                         value={tempName} 
