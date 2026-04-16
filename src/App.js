@@ -22,6 +22,23 @@ const CATEGORIES = [
 // =========================================
 // SVG COMPONENTS
 // =========================================
+
+// COMPONENTE SVG: CORAZÓN AZUL LATIENDO (Sin Osos)
+const AnimatedBlueHeart = () => (
+    <svg 
+        className="ph heart-beat-anim" 
+        viewBox="0 0 256 256" 
+        style={{
+            color: '#29B6F6', /* Azul Ártico definido en tu CSS */
+            width: '1.8rem', 
+            height: '1.8rem',
+            filter: 'drop-shadow(0 4px 6px rgba(41, 182, 246, 0.4))'
+        }}
+    >
+        <path fill="currentColor" d="M128 216.8c-6.4-4.8-12.8-10-19.2-15.2-32-25.6-64-49.6-76.8-62.4-14.4-14.4-22.4-33.6-22.4-54.4 0-36 27.2-64 64-64 16 0 32 6.4 44.8 17.6 11.2-11.2 27.2-17.6 44.8-17.6 36 0 64 28 64 64 0 20.8-8 40-22.4 54.4-12.8 12.8-44.8 36.8-76.8 62.4-6.4 5.6-12.8 10.4-19.2 15.2z" />
+    </svg>
+);
+
 const PolarBearSVG = () => (
     <div className="bear-float">
         <svg className="bear-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -302,10 +319,10 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
     const addOrEditTask = (taskData, id) => {
         if (id) {
             setTasks(tasks.map(t => t.id === id ? { ...t, ...taskData } : t));
-            showToast("¡Tarea editada! \u270f\ufe0f");
+            showToast("¡Tarea editada! ✏️");
         } else {
             setTasks([{ id: Date.now(), completed: false, ...taskData }, ...tasks]);
-            showToast("¡Nueva misión creada! \u2b50");
+            showToast("¡Nueva misión creada! ⭐");
         }
         setEditingTask(null);
     };
@@ -314,7 +331,7 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
         setTasks(tasks.map(t => {
             if (t.id === id && !t.completed) {
                 triggerConfetti();
-                showToast("¡Bien hecho! \ud83c\udf89");
+                showToast("¡Bien hecho! 🎉");
             }
             return t.id === id ? { ...t, completed: !t.completed } : t;
         }));
@@ -323,12 +340,12 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
     const confirmDelete = () => {
         setTasks(tasks.filter(t => t.id !== deleteId));
         setDeleteId(null);
-        showToast("Tarea eliminada \ud83d\uddd1\ufe0f");
+        showToast("Tarea eliminada 🗑️");
     };
 
     const giveHug = () => {
         setHugs(hugs + 1);
-        showToast(`¡Abrazo #${hugs + 1}! \u2764\ufe0f`);
+        showToast(`¡Abrazo #${hugs + 1}! ❤️`);
         for(let i=0; i<5; i++) createParticle('heart');
     };
 
@@ -355,7 +372,6 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
             <div className="top-bar">
                 <div className="header-row">
                     <div className="user-greeting">
-                        {/* AQUÍ ESTÁ EL CAMBIO SOLICITADO: "Muñeco" en lugar de \ud83d\udc4b */}
                         <p>Hola, {user?.name || 'Osito'} Muñeco</p>
                         <h1>¡Hoy es gran día!</h1>
                     </div>
@@ -372,20 +388,23 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
                         <div className="func-label">Abrazos Hoy</div>
                     </div>
                     <div className="func-card">
-                        <i className="ph ph-check-circle func-icon" style={{color: '#69F0AE'}}></i>
+                        <AnimatedBlueHeart />
                         <div className="func-val">{tasks.filter(t => t.completed).length}</div>
                         <div className="func-label">Hechas</div>
                     </div>
                 </div>
 
-                {/* Notita de Amor */}
-                <div className="sticky-note">
-                    <textarea 
-                        rows="2" 
-                        placeholder="Escribe una nota para tu osito..." 
-                        value={note}
-                        onChange={handleNoteChange}
-                    ></textarea>
+                {/* Notita de Amor Estética "Premium" */}
+                <div className="sticky-note-container">
+                    <div className="note-pin"></div>
+                    <div className="sticky-note">
+                        <textarea 
+                            rows="2" 
+                            placeholder="Escribe una nota para tu osito..." 
+                            value={note}
+                            onChange={handleNoteChange}
+                        ></textarea>
+                    </div>
                 </div>
 
                 <div className="search-bar">
@@ -406,7 +425,7 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
             <div className="task-list-container">
                 {filteredTasks.length === 0 ? (
                     <div style={{textAlign: 'center', marginTop: 100, color: 'var(--text-sec)'}}>
-                        <div className="bear-float" style={{fontSize: '5rem', marginBottom: 20}}>\ud83e\uddfd</div>
+                        <div className="bear-float" style={{fontSize: '5rem', marginBottom: 20}}>🐻‍❄️</div>
                         <p style={{fontWeight: 700, fontSize: '1.1rem'}}>No hay tareas aquí.</p>
                         <p style={{fontSize: '0.9rem', marginBottom: 20}}>¡Todo en orden!</p>
                         <button className="btn-secondary" onClick={() => { setEditingTask(null); setModalOpen(true); }}>Añadir tarea</button>
