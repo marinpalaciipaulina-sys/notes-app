@@ -166,7 +166,7 @@ const SettingsPanel = ({ isOpen, onClose, user, onUpdateUser, onLogout, theme, t
 };
 
 // =========================================
-// TASK MODAL
+// TASK MODAL (Con Botón Calendario)
 // =========================================
 const TaskModal = ({ isOpen, onClose, onSave, editingTask }) => {
     const [text, setText] = useState('');
@@ -222,6 +222,17 @@ const TaskModal = ({ isOpen, onClose, onSave, editingTask }) => {
                     ))}
                 </div>
 
+                <label style={{fontSize:'0.8rem', fontWeight:'800', color:'var(--text-sec)', display:'block', marginBottom:'8px', textAlign:'left'}}>Fecha Límite</label>
+                <div className="custom-date-btn">
+                    <i className="ph ph-calendar-blank"></i>
+                    <span>{date || 'Seleccionar fecha'}</span>
+                    <input 
+                        type="date" 
+                        value={date} 
+                        onChange={(e) => setDate(e.target.value)}
+                    />
+                </div>
+
                 <button onClick={handleSave} className="btn-primary" style={{marginTop: 10}}>
                     {editingTask ? 'Guardar Cambios' : 'Crear Misión'}
                 </button>
@@ -251,12 +262,11 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm }) => {
 };
 
 // =========================================
-// MAIN DASHBOARD
 // =========================================
 const Dashboard = ({ user, onLogout, onUpdateUser }) => {
     const [tasks, setTasks] = useState([]);
     const [search, setSearch] = useState('');
-    const [filterCat, setFilterCat] = useState('all');
+    const [filterCat, setFilterCat] = useState('all'); 
     const [modalOpen, setModalOpen] = useState(false);
     const [editingTask, setEditingTask] = useState(null);
     const [deleteId, setDeleteId] = useState(null);
@@ -268,88 +278,53 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
     const [hugs, setHugs] = useState(0);
     const [note, setNote] = useState('');
 
-    // Theme Effect
-    useEffect(() => { document.body.setAttribute('data-theme', theme); }, [theme]);
-
-    // Load Data
-    useEffect(() => {
-        try {
-            const savedTasks = localStorage.getItem('osito_tasks_v5');
-            if (savedTasks) setTasks(JSON.parse(savedTasks));
-            
-            const savedHugs = localStorage.getItem('osito_hugs');
-            if (savedHugs) setHugs(parseInt(savedHugs));
-
-            const savedNote = localStorage.getItem('osito_note');
-            if (savedNote) setNote(savedNote);
-        } catch (e) { console.error(e); }
-    }, []);
-
-    // Save Data
-    useEffect(() => { 
-        try { localStorage.setItem('osito_tasks_v5', JSON.stringify(tasks)); } catch(e){}
-    }, [tasks]);
-    
-    useEffect(() => { 
-        try { localStorage.setItem('osito_hugs', hugs); } catch(e){}
-    }, [hugs]);
+    const showToast = (msg) => {
+        setToast(msg);
+        setTimeout(() => setToast(null), 3000);
+    };
 
     const handleNoteChange = (e) => {
         setNote(e.target.value);
         try { localStorage.setItem('osito_note', e.target.value); } catch(e){}
     };
 
-    // Toast Helper
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(null), 3000);
-    };
-
-    // Particle Creator (Confetti/Hearts)
+    // Particle Creator (Confetti/Hearts) 
     const createParticle = (type) => {
         const p = document.createElement('div');
-        p.className = `particle ${type}`;
+        p.className = 'confetti-particle';
         p.style.left = Math.random() * 100 + 'vw';
         p.style.bottom = '-50px';
+        
+        if (type === 'heart') {
+             p.style.width = '24px';
+             p.style.height = '24px';
+             p.style.clipPath = "path('M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z')";
+             p.style.backgroundColor = '#FF5252';
+             p.style.boxShadow = 'none';
+             p.style.borderRadius = '0';
+             p.style.zIndex = 99999;
+        }
+
+        p.style.setProperty('--twist', (Math.random() - 0.5) * 200 + 'px');
+        p.style.setProperty('--rotation', Math.random() * 720 + 'deg');
+        p.style.setProperty('--duration', (Math.random() * 1.5 + 1.5) + 's');
+
         document.body.appendChild(p);
-        setTimeout(() => p.remove(), 1500);
+        setTimeout(() => p.remove(), 3000);
     };
 
-    // Confetti Logic (Mejorado: Física y Visibilidad)
+    // Confetti Logic 
     const triggerConfetti = () => {
-        // Paleta de colores de la App (Alto contraste)
-        const colors = [
-            '#29B6F6', // Azul Principal
-            '#FFFFFF', // Blanco (nieve)
-            '#EC407A', // Rosa Novia
-            '#FFCA28', // Amarillo Sol
-            '#81D4FA'  // Azul Claro
-        ];
-
-        // Aumentamos la cantidad de partículas para impacto visual
-        for (let i = 0; i < 50; i++) {
+        const colors = ['#29B6F6', '#FFFFFF', '#EC407A', '#FFCA28', '#81D4FA'];
+        for (let i = 0; i < 40; i++) {
             const p = document.createElement('div');
             p.className = 'confetti-particle';
-            
-            // Posición horizontal inicial (0% a 100% del ancho de pantalla)
             p.style.left = Math.random() * 100 + 'vw';
-            
-            // Color aleatorio
             p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            
-            // Variables CSS para la Física Aleatoria
-            // --twist: Cuánto se mueve hacia los lados (viento) de -100px a 100px
             p.style.setProperty('--twist', (Math.random() - 0.5) * 200 + 'px');
-            
-            // --rotation: Grados de rotación al final
             p.style.setProperty('--rotation', Math.random() * 720 + 'deg');
-            
-            // --duration: Duración de la caída (1.5s a 3s) para que caigan a velocidades distintas
             p.style.setProperty('--duration', (Math.random() * 1.5 + 1.5) + 's');
-
             document.body.appendChild(p);
-            
-            // Eliminamos el elemento después de la animación para no saturar el navegador
             setTimeout(() => p.remove(), 3000);
         }
     };
@@ -358,10 +333,10 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
     const addOrEditTask = (taskData, id) => {
         if (id) {
             setTasks(tasks.map(t => t.id === id ? { ...t, ...taskData } : t));
-            showToast("¡Tarea editada! \u270f\ufe0f");
+            showToast("¡Tarea editada! ");
         } else {
             setTasks([{ id: Date.now(), completed: false, ...taskData }, ...tasks]);
-            showToast("¡Nueva misión creada! \u2b50");
+            showToast("¡Nueva misión creada! ");
         }
         setEditingTask(null);
     };
@@ -369,8 +344,8 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
     const toggleComplete = (id) => {
         setTasks(tasks.map(t => {
             if (t.id === id && !t.completed) {
-                triggerConfetti();
-                showToast("¡Bien hecho! \ud83c\udf89");
+                triggerConfetti(); 
+                showToast("¡Bien hecho! ");
             }
             return t.id === id ? { ...t, completed: !t.completed } : t;
         }));
@@ -379,12 +354,12 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
     const confirmDelete = () => {
         setTasks(tasks.filter(t => t.id !== deleteId));
         setDeleteId(null);
-        showToast("Tarea eliminada \ud83d\uddd1\ufe0f");
+        showToast("Tarea eliminada ");
     };
 
     const giveHug = () => {
         setHugs(hugs + 1);
-        showToast(`¡Abrazo #${hugs + 1}! \u2764\ufe0f`);
+        showToast(`¡Abrazo #${hugs + 1}! `);
         for(let i=0; i<5; i++) createParticle('heart');
     };
 
@@ -401,11 +376,14 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
         return map[catId] || 'var(--text-sec)';
     };
 
-    // Filter & Sort
+    // Filter & Sort (Lógica de Filtrado por Categoría)
     const filteredTasks = tasks.filter(t => {
         if (!t) return false;
+        
         const matchesSearch = (t.text || '').toLowerCase().includes(search.toLowerCase());
+        
         const matchesCat = filterCat === 'all' || t.category === filterCat;
+        
         return matchesSearch && matchesCat;
     }).sort((a, b) => {
         if (a.completed !== b.completed) return a.completed ? 1 : -1;
@@ -439,6 +417,7 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
                         <div className="func-val">{hugs}</div>
                         <div className="func-label">Abrazos Hoy</div>
                     </div>
+                    
                     <div className="func-card">
                         <AnimatedBlueHeart />
                         <div className="func-val">{tasks.filter(t => t.completed).length}</div>
@@ -446,7 +425,7 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
                     </div>
                 </div>
 
-                {/* Notita de Amor Estética "Premium" */}
+                {/* Notita de Amor */}
                 <div className="sticky-note-container">
                     <div className="note-pin"></div>
                     <div className="sticky-note">
@@ -464,6 +443,7 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
                     <input type="text" placeholder="Buscar..." value={search} onChange={e => setSearch(e.target.value)} />
                 </div>
 
+                {/* Barra de Filtros por Categoría */}
                 <div className="filter-bar">
                     {CATEGORIES.map(c => (
                         <button 
@@ -471,7 +451,6 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
                             className={`filter-chip ${filterCat === c.id ? 'active' : ''}`} 
                             onClick={() => setFilterCat(c.id)}
                             style={{
-                                // Si está activo, usa el color de la categoría, si es 'all' usa el principal
                                 backgroundColor: filterCat === c.id ? (c.id === 'all' ? 'var(--icon-color)' : getCategoryColor(c.id)) : 'var(--bg-card)',
                                 color: filterCat === c.id ? 'white' : 'var(--text-sec)',
                                 borderColor: filterCat === c.id ? (c.id === 'all' ? 'var(--icon-color)' : getCategoryColor(c.id)) : 'transparent'
@@ -487,7 +466,6 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
                 <div className="task-list-container">
                     {filteredTasks.length === 0 ? (
                         <div style={{textAlign: 'center', marginTop: 100, color: 'var(--text-sec)'}}>
-                            {/* CAMBIO: OSO POLAR DEL DASHBOARD POR CORAZÓN AZUL LATIENDO */}
                             <div style={{marginBottom: 20}}>
                                 <AnimatedBlueHeart sizeMultiplier={4} />
                             </div>
@@ -513,8 +491,9 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
                                         <h3>{task.text}</h3>
                                         <div className="task-meta">
                                             <span style={{fontWeight: 800, background: catColor, color: 'white', padding: '2px 6px', borderRadius: 4, opacity: 0.9}}>{prioInfo.label}</span>
-                                            <span>·</span>
+                                            <span>•</span>
                                             <span style={{color: catColor, fontWeight: 800}}>{catInfo.label}</span>
+                                            {task.date && <span>• {task.date}</span>}
                                         </div>
                                     </div>
                                     <div className="action-btns">

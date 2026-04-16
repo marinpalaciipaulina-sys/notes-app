@@ -374,35 +374,69 @@ body {
     background: rgba(0,0,0,0.2);
 }
 
+/* =========================================
+           BOTÓN DE FECHA PERSONALIZADO
+           ========================================= */
+.custom-date-btn {
+    position: relative;
+    background: rgba(41, 182, 246, 0.1); /* Fondo azul muy suave */
+    border: 2px solid var(--icon-color);
+    border-radius: var(--radius-btn);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 20px;
+}
+
+.custom-date-btn:hover {
+    background: rgba(41, 182, 246, 0.2);
+    transform: translateY(-2px);
+}
+
+.custom-date-btn i {
+    font-size: 1.4rem;
+    color: var(--icon-color);
+}
+
+.custom-date-btn span {
+    color: var(--text-main);
+    font-weight: 700;
+    flex: 1;
+}
+
+/* Truco para que el input ocupe todo el botón pero sea invisible */
+.custom-date-btn input[type="date"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    font-size: 20px; /* Tamaño del tap para asegurar que se pulse */
+}
+
+/* =========================================
+           CONFETTI DE ALTA CALIDAD (VERIFICADO)
+           ========================================= */
 .confetti-particle {
     position: fixed;
     pointer-events: none;
-    z-index: 9999;
-    /* Tamaño más grande para mejor visibilidad */
-    width: 12px; 
+    z-index: 99999; /* Z-Index muy alto para que no se oculte */
+    width: 12px;
     height: 12px;
-    border-radius: 50%; /* Forma redonda suave */
-    
-    /* Sombra para dar profundidad */
-    box-shadow: inset -2px -2px 6px rgba(0,0,0,0.1); 
-    
-    /* Optimización de rendimiento para animaciones suaves */
+    border-radius: 50%;
+    box-shadow: inset -2px -2px 6px rgba(0,0,0,0.1);
     will-change: transform, opacity;
-    
-    /* La animación usa variables CSS para aleatoriedad */
     animation: confetti-fall var(--duration, 2s) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 @keyframes confetti-fall {
-    0% {
-        transform: translate(0, 0) rotate(0deg);
-        opacity: 1;
-    }
-    100% {
-        /* Movimiento X aleatorio (viento) + Caída Y + Rotación */
-        transform: translate(var(--twist), 110vh) rotate(var(--rotation));
-        opacity: 0;
-    }
+    0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--twist), 110vh) rotate(var(--rotation)); opacity: 0; }
 }
 
 .sticky-note textarea {
