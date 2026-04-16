@@ -37,7 +37,8 @@ const CATEGORIES = [
   { id: 'salud', label: 'Salud' },
   { id: 'trabajo', label: 'Trabajo' },
   { id: 'familia', label: 'Familia' },
-  { id: 'novia', label: 'Novia \u2764\ufe0f' }
+  { id: 'novia', label: 'Novia \u2764\ufe0f' },
+  { id: 'universidad', label: 'Universidad' }
 ];
 
 // =========================================
