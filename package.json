@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Osito Polar Notes - App de tareas móvil con diseño ártico",
   "main": "index.js",
-  "homepage": "https://notes-app-e4rm-gsts6ffpa-marinpalaciipaulina-sys-projects.vercel.app",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
