@@ -312,9 +312,43 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
         setTimeout(() => p.remove(), 1500);
     };
 
-    // Confetti Logic
+    // Confetti Logic (Mejorado: Física y Visibilidad)
     const triggerConfetti = () => {
-        for (let i = 0; i < 30; i++) createParticle('confetti');
+        // Paleta de colores de la App (Alto contraste)
+        const colors = [
+            '#29B6F6', // Azul Principal
+            '#FFFFFF', // Blanco (nieve)
+            '#EC407A', // Rosa Novia
+            '#FFCA28', // Amarillo Sol
+            '#81D4FA'  // Azul Claro
+        ];
+
+        // Aumentamos la cantidad de partículas para impacto visual
+        for (let i = 0; i < 50; i++) {
+            const p = document.createElement('div');
+            p.className = 'confetti-particle';
+            
+            // Posición horizontal inicial (0% a 100% del ancho de pantalla)
+            p.style.left = Math.random() * 100 + 'vw';
+            
+            // Color aleatorio
+            p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Variables CSS para la Física Aleatoria
+            // --twist: Cuánto se mueve hacia los lados (viento) de -100px a 100px
+            p.style.setProperty('--twist', (Math.random() - 0.5) * 200 + 'px');
+            
+            // --rotation: Grados de rotación al final
+            p.style.setProperty('--rotation', Math.random() * 720 + 'deg');
+            
+            // --duration: Duración de la caída (1.5s a 3s) para que caigan a velocidades distintas
+            p.style.setProperty('--duration', (Math.random() * 1.5 + 1.5) + 's');
+
+            document.body.appendChild(p);
+            
+            // Eliminamos el elemento después de la animación para no saturar el navegador
+            setTimeout(() => p.remove(), 3000);
+        }
     };
 
     // Actions
