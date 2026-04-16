@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 
 // =========================================
-// CONSTANTS & MESSAGES
+// CONSTANTS & DATA
 // =========================================
 const MOTIVATIONAL_MSGS = [
-    "¡Eres increíble, osito! 🐻‍❄️",
-    "¡Un paso más a la meta! ❤️",
+    "¡Eres increíble, osito! \ud83e\uddfd",
+    "¡Un paso más a la meta! \u2764\ufe0f",
     "¡Vamos con todo, mi amor!",
     "¡Orgullosa de ti!",
     "¡Tú puedes, confío en ti!",
-    "¡Lo estás haciendo genial! ✨"
+    "¡Lo estás haciendo genial! \u2728"
 ];
 
 const PRIORITIES = [
@@ -25,29 +25,29 @@ const CATEGORIES = [
     { id: 'trabajo', label: 'Trabajo' },
     { id: 'familia', label: 'Familia' },
     { id: 'universidad', label: 'Universidad' },
-    { id: 'novia', label: 'Novia ❤️' }
+    { id: 'novia', label: 'Novia \u2764\ufe0f' }
 ];
 
 // =========================================
-// SVG POLAR BEAR
+// SVG COMPONENTS
 // =========================================
 const PolarBearSVG = () => (
-    <div className="bear-container bear-float">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <div className="bear-bounce">
+        <svg className="bear-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <circle cx="50" cy="50" r="45" fill="#FFFFFF" />
             <circle cx="18" cy="25" r="12" fill="#FFFFFF" />
             <circle cx="82" cy="25" r="12" fill="#FFFFFF" />
             <circle cx="18" cy="25" r="6" fill="#E1F5FE" />
             <circle cx="82" cy="25" r="6" fill="#E1F5FE" />
-            <circle cx="35" cy="45" r="5" fill="#2C3E50" />
-            <circle cx="65" cy="45" r="5" fill="#2C3E50" />
+            <circle cx="35" cy="45" r="5" fill="#334E68" />
+            <circle cx="65" cy="45" r="5" fill="#334E68" />
             <circle cx="37" cy="43" r="2" fill="white" />
             <circle cx="67" cy="43" r="2" fill="white" />
             <circle cx="25" cy="60" r="8" fill="#FFCDD2" opacity="0.5"/>
             <circle cx="75" cy="60" r="8" fill="#FFCDD2" opacity="0.5"/>
             <ellipse cx="50" cy="65" rx="15" ry="10" fill="#E1F5FE" />
-            <circle cx="50" cy="62" r="4" fill="#2C3E50" />
-            <path d="M46 70 Q50 74 54 70" stroke="#2C3E50" strokeWidth="2" fill="none" strokeLinecap="round" />
+            <circle cx="50" cy="62" r="4" fill="#334E68" />
+            <path d="M46 70 Q50 74 54 70" stroke="#334E68" strokeWidth="2" fill="none" strokeLinecap="round" />
         </svg>
     </div>
 );
@@ -65,16 +65,16 @@ const AuthScreen = ({ onLogin }) => {
         setLoading(true);
         setTimeout(() => {
             setLoading(false);
-            onLogin({ name: isRegister ? name : 'Osito Polar' });
+            onLogin({ name: isRegister ? name : 'Osito Polar', theme: 'light' });
         }, 1200);
     };
 
     return (
-        <div className="auth-container pop-in">
+        <div className="auth-container elastic-in">
             <div style={{textAlign: 'center', marginBottom: 30}}>
                 <PolarBearSVG />
-                <h1 style={{fontSize: '2.2rem', color: 'var(--text-main)'}}>Osito Polar</h1>
-                <p style={{color: 'var(--text-sec)', fontWeight: 600}}>Organiza tu vida con estilo</p>
+                <h1 style={{fontSize: '2.4rem', color: 'var(--text-main)'}}>Osito Polar</h1>
+                <p style={{color: 'var(--text-sec)', fontWeight: 700}}>Organiza tu vida con estilo</p>
             </div>
             
             <form className="auth-card" onSubmit={handleSubmit}>
@@ -104,7 +104,56 @@ const AuthScreen = ({ onLogin }) => {
 };
 
 // =========================================
-// ADD/EDIT MODAL
+// SETTINGS PANEL
+// =========================================
+const SettingsPanel = ({ isOpen, onClose, user, onUpdateUser, onLogout, theme, toggleTheme }) => {
+    const [tempName, setTempName] = useState(user?.name || '');
+
+    const handleSaveName = () => {
+        if(user) onUpdateUser({ ...user, name: tempName });
+        onClose();
+    };
+
+    return (
+        <div className={`settings-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}>
+            <div className="settings-panel slide-up" onClick={e => e.stopPropagation()}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30}}>
+                    <h2 style={{fontSize: '1.5rem'}}>Perfil</h2>
+                    <button onClick={onClose} className="mini-btn"><i className="ph ph-x"></i></button>
+                </div>
+
+                <div style={{textAlign: 'center', marginBottom: 30}}>
+                    <div style={{width: 80, height: 80, background: '#E3F2FD', borderRadius: '50%', margin: '0 auto 10px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'2rem'}}>\ud83e\uddfd</div>
+                    <input 
+                        type="text" 
+                        value={tempName} 
+                        onChange={e => setTempName(e.target.value)} 
+                        style={{border:'none', background:'transparent', textAlign:'center', fontSize:'1.2rem', fontWeight:'800', color:'var(--text-main)', outline:'none', borderBottom: '2px dashed var(--text-sec)', width:'100%'}}
+                    />
+                </div>
+
+                <div style={{marginBottom: 20}}>
+                    <button className="btn-secondary" style={{width:'100%', marginBottom: 10}} onClick={handleSaveName}>
+                        Guardar Nombre
+                    </button>
+                    <button className="btn-secondary" style={{width:'100%', display:'flex', justifyContent:'space-between'}} onClick={toggleTheme}>
+                        <span>Modo {theme === 'light' ? 'Oscuro' : 'Claro'}</span>
+                        <i className={`ph ${theme === 'light' ? 'ph-moon' : 'ph-sun'}`}></i>
+                    </button>
+                </div>
+
+                <div style={{marginTop: 'auto'}}>
+                    <button onClick={onLogout} style={{width:'100%', background: '#FFEBEE', color: '#C62828', padding: 16, borderRadius: 20, fontWeight: 800, border:'none', cursor:'pointer'}}>
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// =========================================
+// TASK MODAL (ADD/EDIT)
 // =========================================
 const TaskModal = ({ isOpen, onClose, onSave, editingTask }) => {
     const [text, setText] = useState('');
@@ -112,19 +161,15 @@ const TaskModal = ({ isOpen, onClose, onSave, editingTask }) => {
     const [priority, setPriority] = useState('med');
     const [date, setDate] = useState('');
 
-    // Reset form or load data when modal opens/closes
     useEffect(() => {
         if (isOpen) {
             if (editingTask) {
-                setText(editingTask.text);
-                setCategory(editingTask.category);
-                setPriority(editingTask.priority);
+                setText(editingTask.text || '');
+                setCategory(editingTask.category || 'novia');
+                setPriority(editingTask.priority || 'med');
                 setDate(editingTask.date || '');
             } else {
-                setText('');
-                setCategory('novia');
-                setPriority('med');
-                setDate('');
+                setText(''); setCategory('novia'); setPriority('med'); setDate('');
             }
         }
     }, [isOpen, editingTask]);
@@ -138,9 +183,9 @@ const TaskModal = ({ isOpen, onClose, onSave, editingTask }) => {
     };
 
     return (
-        <div className="modal-overlay open" onClick={onClose}>
-            <div className="modal-sheet slide-up" onClick={e => e.stopPropagation()}>
-                <h3 style={{marginBottom:'20px', fontSize:'1.5rem'}}>{editingTask ? 'Editar Misión' : 'Nueva Misión'}</h3>
+        <div className={`modal-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}>
+            <div className="modal-content elastic-in" onClick={e => e.stopPropagation()}>
+                <h3 style={{marginBottom:'20px', fontSize:'1.4rem'}}>{editingTask ? 'Editar Misión' : 'Nueva Misión'}</h3>
                 
                 <textarea 
                     className="input-base" 
@@ -150,36 +195,21 @@ const TaskModal = ({ isOpen, onClose, onSave, editingTask }) => {
                     style={{marginBottom:'20px'}}
                 ></textarea>
 
-                <label style={{fontSize:'0.9rem', fontWeight:'700', color:'var(--text-sec)', display:'block', marginBottom:'8px'}}>Prioridad</label>
+                <label style={{fontSize:'0.8rem', fontWeight:'800', color:'var(--text-sec)', display:'block', marginBottom:'8px', textAlign:'left'}}>Prioridad</label>
                 <div className="prio-selector">
                     {PRIORITIES.map(p => (
-                        <div 
-                            key={p.id} 
-                            className={`prio-btn ${priority === p.id ? 'selected' : ''}`}
-                            onClick={() => setPriority(p.id)}
-                        >
-                            {p.label}
-                        </div>
+                        <div key={p.id} className={`prio-btn ${priority === p.id ? 'selected' : ''}`} onClick={() => setPriority(p.id)}>{p.label}</div>
                     ))}
                 </div>
 
-                <label style={{fontSize:'0.9rem', fontWeight:'700', color:'var(--text-sec)', display:'block', marginBottom:'8px'}}>Categoría</label>
+                <label style={{fontSize:'0.8rem', fontWeight:'800', color:'var(--text-sec)', display:'block', marginBottom:'8px', textAlign:'left'}}>Categoría</label>
                 <div className="grid-options">
                     {CATEGORIES.filter(c => c.id !== 'all').map(c => (
-                        <div 
-                            key={c.id}
-                            className={`option-pill ${category === c.id ? 'selected' : ''}`}
-                            onClick={() => setCategory(c.id)}
-                        >
-                            {c.label}
-                        </div>
+                        <div key={c.id} className={`option-pill ${category === c.id ? 'selected' : ''}`} onClick={() => setCategory(c.id)}>{c.label}</div>
                     ))}
                 </div>
 
-                <label style={{fontSize:'0.9rem', fontWeight:'700', color:'var(--text-sec)', display:'block', marginBottom:'8px'}}>Fecha</label>
-                <input type="date" className="input-base" value={date} onChange={e => setDate(e.target.value)} style={{marginBottom:'24px'}} />
-
-                <button onClick={handleSave} className="btn-primary">
+                <button onClick={handleSave} className="btn-primary" style={{marginTop: 10}}>
                     {editingTask ? 'Guardar Cambios' : 'Crear Misión'}
                 </button>
             </div>
@@ -188,30 +218,72 @@ const TaskModal = ({ isOpen, onClose, onSave, editingTask }) => {
 };
 
 // =========================================
+// DELETE CONFIRMATION MODAL
+// =========================================
+const DeleteConfirmModal = ({ isOpen, onClose, onConfirm }) => {
+    if (!isOpen) return null;
+    return (
+        <div className={`modal-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}>
+            <div className="modal-content elastic-in" onClick={e => e.stopPropagation()}>
+                <div style={{fontSize: '3rem', marginBottom: 10}}>\ud83d\ude3a</div>
+                <h3 style={{marginBottom: 10}}>¿Segurito, osito?</h3>
+                <p style={{color: 'var(--text-sec)', marginBottom: 20}}>¿Quieres borrar esta tarea para siempre?</p>
+                <div style={{display:'flex', gap: 10}}>
+                    <button onClick={onClose} className="btn-secondary" style={{flex: 1}}>No, dejémosla</button>
+                    <button onClick={onConfirm} className="btn-primary" style={{background: '#FF9AA2', flex: 1}}>Sí, borrar</button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// =========================================
 // MAIN DASHBOARD
 // =========================================
-const Dashboard = ({ user }) => {
+const Dashboard = ({ user, onLogout, onUpdateUser }) => {
     const [tasks, setTasks] = useState([]);
     const [search, setSearch] = useState('');
     const [filterCat, setFilterCat] = useState('all');
     const [modalOpen, setModalOpen] = useState(false);
     const [editingTask, setEditingTask] = useState(null);
+    const [deleteId, setDeleteId] = useState(null);
+    const [settingsOpen, setSettingsOpen] = useState(false);
+    const [theme, setTheme] = useState(user?.theme || 'light');
     const [motivationalMsg, setMotivationalMsg] = useState("¡Vamos con todo!");
+    const [toast, setToast] = useState(null);
 
-    // Load Data
+    // Theme Effect
+    useEffect(() => { document.body.setAttribute('data-theme', theme); }, [theme]);
+
+    // Load Data with Error Handling
     useEffect(() => {
-        const saved = localStorage.getItem('osito_tasks_v3');
-        if (saved) setTasks(JSON.parse(saved));
+        try {
+            const saved = localStorage.getItem('osito_tasks_v4');
+            if (saved) setTasks(JSON.parse(saved));
+        } catch (e) {
+            console.error("Error loading tasks", e);
+            setTasks([]);
+        }
     }, []);
 
     // Save Data
-    useEffect(() => {
-        localStorage.setItem('osito_tasks_v3', JSON.stringify(tasks));
+    useEffect(() => { 
+        try {
+            localStorage.setItem('osito_tasks_v4', JSON.stringify(tasks));
+        } catch (e) {
+            console.error("Error saving tasks", e);
+        }
     }, [tasks]);
 
+    // Toast Helper
+    const showToast = (msg) => {
+        setToast(msg);
+        setTimeout(() => setToast(null), 3000);
+    };
+
     // Confetti Logic
-    const triggerConfetti = (msg) => {
-        const colors = ['#66A6FF', '#FF9A9E', '#FDCB6E', '#55EFC4', '#A29BFE'];
+    const triggerConfetti = () => {
+        const colors = ['#63B3ED', '#FF9AA2', '#FFDAC1', '#E2F0CB', '#D4A5A5'];
         for (let i = 0; i < 40; i++) {
             const conf = document.createElement('div');
             conf.className = 'confetti';
@@ -221,17 +293,18 @@ const Dashboard = ({ user }) => {
             document.body.appendChild(conf);
             setTimeout(() => conf.remove(), 2500);
         }
-        setMotivationalMsg(msg);
+        const randomMsg = MOTIVATIONAL_MSGS[Math.floor(Math.random() * MOTIVATIONAL_MSGS.length)];
+        setMotivationalMsg(randomMsg);
     };
 
-    // Task Handlers
+    // Actions
     const addOrEditTask = (taskData, id) => {
         if (id) {
-            // Edit
             setTasks(tasks.map(t => t.id === id ? { ...t, ...taskData } : t));
+            showToast("¡Tarea editada! \u270f\ufe0f");
         } else {
-            // Add
             setTasks([{ id: Date.now(), completed: false, ...taskData }, ...tasks]);
+            showToast("¡Nueva misión creada! \u2b50");
         }
         setEditingTask(null);
     };
@@ -239,32 +312,23 @@ const Dashboard = ({ user }) => {
     const toggleComplete = (id) => {
         setTasks(tasks.map(t => {
             if (t.id === id && !t.completed) {
-                const randomMsg = MOTIVATIONAL_MSGS[Math.floor(Math.random() * MOTIVATIONAL_MSGS.length)];
-                triggerConfetti(randomMsg);
+                triggerConfetti();
+                showToast("¡Bien hecho! \ud83c\udf89");
             }
             return t.id === id ? { ...t, completed: !t.completed } : t;
         }));
     };
 
-    const deleteTask = (id) => {
-        // Visual feedback first
-        const el = document.getElementById(`task-${id}`);
-        if(el) el.classList.add('fade-out');
-        
-        // Logic after animation
-        setTimeout(() => {
-            setTasks(tasks.filter(t => t.id !== id));
-        }, 400);
+    const confirmDelete = () => {
+        setTasks(tasks.filter(t => t.id !== deleteId));
+        setDeleteId(null);
+        showToast("Tarea eliminada \ud83d\uddd1\ufe0f");
     };
 
-    const openEdit = (task) => {
-        setEditingTask(task);
-        setModalOpen(true);
-    };
-
-    // Filter & Sort
+    // Filter & Sort with Safety Checks
     const filteredTasks = tasks.filter(t => {
-        const matchesSearch = t.text.toLowerCase().includes(search.toLowerCase());
+        if (!t) return false;
+        const matchesSearch = (t.text || '').toLowerCase().includes(search.toLowerCase());
         const matchesCat = filterCat === 'all' || t.category === filterCat;
         return matchesSearch && matchesCat;
     }).sort((a, b) => {
@@ -274,20 +338,26 @@ const Dashboard = ({ user }) => {
     });
 
     return (
-        <div className="app-layout pop-in">
-            {/* Top Section */}
+        <div className="app-layout elastic-in">
+            {/* Toast Notification */}
+            <div className={`toast ${toast ? 'show' : ''}`}>
+                <i className="ph ph-info"></i> {toast}
+            </div>
+
+            {/* Top Bar */}
             <div className="top-bar">
                 <div className="header-row">
                     <div className="user-greeting">
-                        <p>Hola, {user.name} 👋</p>
+                        <p>Hola, {user?.name || 'Osito'} \ud83d\udc4b</p>
                         <h1>¡Hoy es gran día!</h1>
                     </div>
-                    <button className="btn-icon"><i className="ph ph-gear"></i></button>
+                    <button className="btn-icon" onClick={() => setSettingsOpen(true)}>
+                        <i className="ph ph-gear"></i>
+                    </button>
                 </div>
 
-                {/* Mensaje Motivacional */}
-                <div className="motivational-bubble">
-                    <i className="ph ph-heart-fill"></i>
+                <div className="motivational-card">
+                    <i className="ph ph-heart-fill" style={{fontSize: '1.2rem'}}></i>
                     <span>{motivationalMsg}</span>
                 </div>
 
@@ -308,14 +378,16 @@ const Dashboard = ({ user }) => {
             {/* Task List */}
             <div className="task-list-container">
                 {filteredTasks.length === 0 ? (
-                    <div style={{textAlign: 'center', marginTop: 80, color: 'var(--text-sec)'}}>
-                        <div style={{fontSize: '4rem', marginBottom: 20, opacity: 0.3}}>🐻‍❄️</div>
-                        <p>No hay tareas aquí.</p>
+                    <div style={{textAlign: 'center', marginTop: 100, color: 'var(--text-sec)'}}>
+                        <div className="bear-bounce" style={{fontSize: '5rem', marginBottom: 20}}>\ud83e\uddfd</div>
+                        <p style={{fontWeight: 700, fontSize: '1.1rem'}}>No hay tareas aquí.</p>
+                        <p style={{fontSize: '0.9rem', marginBottom: 20}}>¡Todo en orden!</p>
+                        <button className="btn-secondary" onClick={() => { setEditingTask(null); setModalOpen(true); }}>Añadir tarea</button>
                     </div>
                 ) : (
                     filteredTasks.map(task => {
-                        const prioInfo = PRIORITIES.find(p => p.id === task.priority);
-                        const catInfo = CATEGORIES.find(c => c.id === task.category);
+                        const prioInfo = PRIORITIES.find(p => p.id === task.priority) || PRIORITIES[1];
+                        const catInfo = CATEGORIES.find(c => c.id === task.category) || { label: 'General' };
                         return (
                             <div key={task.id} id={`task-${task.id}`} className={`task-card priority-${task.priority} ${task.completed ? 'completed' : ''}`}>
                                 <div 
@@ -327,14 +399,14 @@ const Dashboard = ({ user }) => {
                                 <div className="task-content">
                                     <h3>{task.text}</h3>
                                     <div className="task-meta">
-                                        <span style={{color: prioInfo.color, fontWeight: 800}}>{prioInfo.label}</span>
-                                        <span>•</span>
+                                        <span style={{fontWeight: 800, background: prioInfo.color, color: 'white', padding: '2px 6px', borderRadius: 4, opacity: 0.9}}>{prioInfo.label}</span>
+                                        <span>·</span>
                                         <span>{catInfo.label}</span>
                                     </div>
                                 </div>
                                 <div className="action-btns">
-                                    <button className="mini-btn edit" onClick={() => openEdit(task)}><i className="ph ph-pencil-simple"></i></button>
-                                    <button className="mini-btn del" onClick={() => deleteTask(task.id)}><i className="ph ph-trash"></i></button>
+                                    <button className="mini-btn edit" onClick={() => { setEditingTask(task); setModalOpen(true); }}><i className="ph ph-pencil-simple"></i></button>
+                                    <button className="mini-btn del" onClick={() => setDeleteId(task.id)}><i className="ph ph-trash"></i></button>
                                 </div>
                             </div>
                         );
@@ -347,12 +419,18 @@ const Dashboard = ({ user }) => {
                 <i className="ph ph-plus"></i>
             </button>
 
-            {/* Modal */}
-            <TaskModal 
-                isOpen={modalOpen} 
-                onClose={() => setModalOpen(false)} 
-                onSave={addOrEditTask}
-                editingTask={editingTask}
+            {/* Modals & Panels */}
+            <TaskModal isOpen={modalOpen} onClose={() => setModalOpen(false)} onSave={addOrEditTask} editingTask={editingTask} />
+            <DeleteConfirmModal isOpen={!!deleteId} onClose={() => setDeleteId(null)} onConfirm={confirmDelete} />
+            
+            <SettingsPanel 
+                isOpen={settingsOpen} 
+                onClose={() => setSettingsOpen(false)} 
+                user={user} 
+                onUpdateUser={onUpdateUser} 
+                onLogout={onLogout} 
+                theme={theme} 
+                toggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')} 
             />
         </div>
     );
@@ -363,7 +441,10 @@ const Dashboard = ({ user }) => {
 // =========================================
 const App = () => {
     const [user, setUser] = useState(null);
-    return user ? <Dashboard user={user} /> : <AuthScreen onLogin={setUser} />;
+
+    return user 
+        ? <Dashboard user={user} onLogout={() => setUser(null)} onUpdateUser={setUser} /> 
+        : <AuthScreen onLogin={setUser} />;
 };
 
 export default App;
