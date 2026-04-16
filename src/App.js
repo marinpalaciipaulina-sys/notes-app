@@ -4,15 +4,6 @@ import './App.css';
 // =========================================
 // CONSTANTS & DATA
 // =========================================
-const MOTIVATIONAL_MSGS = [
-    "¡Eres increíble, osito! \ud83e\uddfd",
-    "¡Un paso más a la meta! \u2764\ufe0f",
-    "¡Vamos con todo, mi amor!",
-    "¡Orgullosa de ti!",
-    "¡Tú puedes, confío en ti!",
-    "¡Lo estás haciendo genial! \u2728"
-];
-
 const PRIORITIES = [
     { id: 'high', label: 'Urgente', color: 'var(--prio-high)' },
     { id: 'med', label: 'Media', color: 'var(--prio-med)' },
@@ -32,22 +23,22 @@ const CATEGORIES = [
 // SVG COMPONENTS
 // =========================================
 const PolarBearSVG = () => (
-    <div className="bear-bounce">
+    <div className="bear-float">
         <svg className="bear-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <circle cx="50" cy="50" r="45" fill="#FFFFFF" />
             <circle cx="18" cy="25" r="12" fill="#FFFFFF" />
             <circle cx="82" cy="25" r="12" fill="#FFFFFF" />
             <circle cx="18" cy="25" r="6" fill="#E1F5FE" />
             <circle cx="82" cy="25" r="6" fill="#E1F5FE" />
-            <circle cx="35" cy="45" r="5" fill="#334E68" />
-            <circle cx="65" cy="45" r="5" fill="#334E68" />
+            <circle cx="35" cy="45" r="5" fill="#1565C0" />
+            <circle cx="65" cy="45" r="5" fill="#1565C0" />
             <circle cx="37" cy="43" r="2" fill="white" />
             <circle cx="67" cy="43" r="2" fill="white" />
             <circle cx="25" cy="60" r="8" fill="#FFCDD2" opacity="0.5"/>
             <circle cx="75" cy="60" r="8" fill="#FFCDD2" opacity="0.5"/>
             <ellipse cx="50" cy="65" rx="15" ry="10" fill="#E1F5FE" />
-            <circle cx="50" cy="62" r="4" fill="#334E68" />
-            <path d="M46 70 Q50 74 54 70" stroke="#334E68" strokeWidth="2" fill="none" strokeLinecap="round" />
+            <circle cx="50" cy="62" r="4" fill="#1565C0" />
+            <path d="M46 70 Q50 74 54 70" stroke="#1565C0" strokeWidth="2" fill="none" strokeLinecap="round" />
         </svg>
     </div>
 );
@@ -153,7 +144,7 @@ const SettingsPanel = ({ isOpen, onClose, user, onUpdateUser, onLogout, theme, t
 };
 
 // =========================================
-// TASK MODAL (ADD/EDIT)
+// TASK MODAL
 // =========================================
 const TaskModal = ({ isOpen, onClose, onSave, editingTask }) => {
     const [text, setText] = useState('');
@@ -249,31 +240,42 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
     const [deleteId, setDeleteId] = useState(null);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [theme, setTheme] = useState(user?.theme || 'light');
-    const [motivationalMsg, setMotivationalMsg] = useState("¡Vamos con todo!");
     const [toast, setToast] = useState(null);
+    
+    // Nuevos Estados para funcionalidades tiernas
+    const [hugs, setHugs] = useState(0);
+    const [note, setNote] = useState('');
 
     // Theme Effect
     useEffect(() => { document.body.setAttribute('data-theme', theme); }, [theme]);
 
-    // Load Data with Error Handling
+    // Load Data
     useEffect(() => {
         try {
-            const saved = localStorage.getItem('osito_tasks_v4');
-            if (saved) setTasks(JSON.parse(saved));
-        } catch (e) {
-            console.error("Error loading tasks", e);
-            setTasks([]);
-        }
+            const savedTasks = localStorage.getItem('osito_tasks_v5');
+            if (savedTasks) setTasks(JSON.parse(savedTasks));
+            
+            const savedHugs = localStorage.getItem('osito_hugs');
+            if (savedHugs) setHugs(parseInt(savedHugs));
+
+            const savedNote = localStorage.getItem('osito_note');
+            if (savedNote) setNote(savedNote);
+        } catch (e) { console.error(e); }
     }, []);
 
     // Save Data
     useEffect(() => { 
-        try {
-            localStorage.setItem('osito_tasks_v4', JSON.stringify(tasks));
-        } catch (e) {
-            console.error("Error saving tasks", e);
-        }
+        try { localStorage.setItem('osito_tasks_v5', JSON.stringify(tasks)); } catch(e){}
     }, [tasks]);
+    
+    useEffect(() => { 
+        try { localStorage.setItem('osito_hugs', hugs); } catch(e){}
+    }, [hugs]);
+
+    const handleNoteChange = (e) => {
+        setNote(e.target.value);
+        try { localStorage.setItem('osito_note', e.target.value); } catch(e){}
+    };
 
     // Toast Helper
     const showToast = (msg) => {
@@ -281,20 +283,19 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
         setTimeout(() => setToast(null), 3000);
     };
 
+    // Particle Creator (Confetti/Hearts)
+    const createParticle = (type) => {
+        const p = document.createElement('div');
+        p.className = `particle ${type}`;
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.bottom = '-50px';
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 1500);
+    };
+
     // Confetti Logic
     const triggerConfetti = () => {
-        const colors = ['#63B3ED', '#FF9AA2', '#FFDAC1', '#E2F0CB', '#D4A5A5'];
-        for (let i = 0; i < 40; i++) {
-            const conf = document.createElement('div');
-            conf.className = 'confetti';
-            conf.style.left = Math.random() * 100 + 'vw';
-            conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            conf.style.animationDuration = (Math.random() * 1 + 0.8) + 's';
-            document.body.appendChild(conf);
-            setTimeout(() => conf.remove(), 2500);
-        }
-        const randomMsg = MOTIVATIONAL_MSGS[Math.floor(Math.random() * MOTIVATIONAL_MSGS.length)];
-        setMotivationalMsg(randomMsg);
+        for (let i = 0; i < 30; i++) createParticle('confetti');
     };
 
     // Actions
@@ -325,7 +326,13 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
         showToast("Tarea eliminada \ud83d\uddd1\ufe0f");
     };
 
-    // Filter & Sort with Safety Checks
+    const giveHug = () => {
+        setHugs(hugs + 1);
+        showToast(`¡Abrazo #${hugs + 1}! \u2764\ufe0f`);
+        for(let i=0; i<5; i++) createParticle('heart');
+    };
+
+    // Filter & Sort
     const filteredTasks = tasks.filter(t => {
         if (!t) return false;
         const matchesSearch = (t.text || '').toLowerCase().includes(search.toLowerCase());
@@ -348,7 +355,8 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
             <div className="top-bar">
                 <div className="header-row">
                     <div className="user-greeting">
-                        <p>Hola, {user?.name || 'Osito'} \ud83d\udc4b</p>
+                        {/* AQUÍ ESTÁ EL CAMBIO SOLICITADO: "Muñeco" en lugar de \ud83d\udc4b */}
+                        <p>Hola, {user?.name || 'Osito'} Muñeco</p>
                         <h1>¡Hoy es gran día!</h1>
                     </div>
                     <button className="btn-icon" onClick={() => setSettingsOpen(true)}>
@@ -356,9 +364,28 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
                     </button>
                 </div>
 
-                <div className="motivational-card">
-                    <i className="ph ph-heart-fill" style={{fontSize: '1.2rem'}}></i>
-                    <span>{motivationalMsg}</span>
+                {/* Elementos Funcionales Tiernos */}
+                <div className="functional-grid">
+                    <div className="func-card" onClick={giveHug}>
+                        <i className="ph ph-heart func-icon"></i>
+                        <div className="func-val">{hugs}</div>
+                        <div className="func-label">Abrazos Hoy</div>
+                    </div>
+                    <div className="func-card">
+                        <i className="ph ph-check-circle func-icon" style={{color: '#69F0AE'}}></i>
+                        <div className="func-val">{tasks.filter(t => t.completed).length}</div>
+                        <div className="func-label">Hechas</div>
+                    </div>
+                </div>
+
+                {/* Notita de Amor */}
+                <div className="sticky-note">
+                    <textarea 
+                        rows="2" 
+                        placeholder="Escribe una nota para tu osito..." 
+                        value={note}
+                        onChange={handleNoteChange}
+                    ></textarea>
                 </div>
 
                 <div className="search-bar">
@@ -379,7 +406,7 @@ const Dashboard = ({ user, onLogout, onUpdateUser }) => {
             <div className="task-list-container">
                 {filteredTasks.length === 0 ? (
                     <div style={{textAlign: 'center', marginTop: 100, color: 'var(--text-sec)'}}>
-                        <div className="bear-bounce" style={{fontSize: '5rem', marginBottom: 20}}>\ud83e\uddfd</div>
+                        <div className="bear-float" style={{fontSize: '5rem', marginBottom: 20}}>\ud83e\uddfd</div>
                         <p style={{fontWeight: 700, fontSize: '1.1rem'}}>No hay tareas aquí.</p>
                         <p style={{fontSize: '0.9rem', marginBottom: 20}}>¡Todo en orden!</p>
                         <button className="btn-secondary" onClick={() => { setEditingTask(null); setModalOpen(true); }}>Añadir tarea</button>
